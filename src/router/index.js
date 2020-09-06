@@ -1,40 +1,64 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import store from '@/components/store/store'
 Vue.use(Router)
-
-export default new Router({
+const loginPath='/home/login'
+const router=new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
-    },
-    {
-      path: '/friendList',
-      component: () => import('@/components/friendList.vue')
+      redirect: '/home/msgList'
     },
     {
       path: '/home',
-      component: () => import('@/components/home.vue'),
+      component: () => import('@/components/page/home.vue'),
       meta:1,
       children: [
         {
           path: '/home/friendList/dialog',
-          component: () => import('@/components/dialog.vue'),
+          component: () => import('@/components/page/dialog.vue'),
           meta:3,
         },
         {
           path: '/home/friendList',
-          component: () => import('@/components/friendList.vue'),
+          component: () => import('@/components/page/friendList.vue'),
           meta:2,
         },
         {
           path: '/home/msgList',
-          component: () => import('@/components/msgList.vue'),
+          component: () => import('@/components/page/msgList.vue'),
+          meta:2,
+        },
+        {
+          path: '/home/login',
+          component: () => import('@/components/page/login.vue'),
           meta:2,
         },
       ]
     }
   ]
 })
+router.beforeEach((to, from, next) => {
+  // console.log(to.path)
+  const nextRoute = [loginPath] // 白名单页面
+  let access_token = localStorage.getItem("im:access_token")
+  // 未登录状态；当路由到 nextRoute 指定页时，跳转至 UserLogIn
+  if (nextRoute.indexOf(to.path) < 0 && !access_token) { // 检测是否登录的页面
+    next({
+      path: loginPath,
+      query: {
+        redirect: to.path
+      }
+    })
+    return
+  }
+  if(to.path=='/home/msgList' || to.path=='/home/friendList'){
+      store.commit('setShowBottomFlag', true)
+  }else{
+      store.commit('setShowBottomFlag', false)
+  }
+  let bottomLabel=to.path.split('/')[2]
+  store.commit('setBottomLabel',bottomLabel)
+  next() 
+})
+export default router

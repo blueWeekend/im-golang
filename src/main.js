@@ -52,7 +52,7 @@ import {
 } from 'cube-ui'
 import App from './App'
 import router from './router'
-import Vuex from 'vuex'
+import store from '@/components/store/store'
 Vue.use(Button)
 Vue.use(Loading)
 Vue.use(Tip)
@@ -91,23 +91,8 @@ Vue.use(Sticky)
 Vue.use(ScrollNav)
 Vue.use(ScrollNavBar)
 Vue.use(RecycleList)
-Vue.use(Vuex)
+
 Vue.config.productionTip = false
-const store = new Vuex.Store({
-  state: {
-    msgList: [],
-    isShowBottom:true,
-  },
-  mutations: {
-    pushMsg (state,payload) {
-      //state.msgList[payload['targetId']].push(payload)
-      state.msgList.push(payload)
-    },
-    setShowBottomFlag(state,flag){
-      state.isShowBottom=flag
-    }
-  }
-})
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

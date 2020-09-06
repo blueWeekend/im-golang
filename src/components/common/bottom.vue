@@ -1,15 +1,15 @@
 <template>
     <div>
-        <cube-tab-bar v-model="selectedLabel"  :data="tabs"  @change="changeHandler">
+        <cube-tab-bar v-model="$store.state.bottomLabel"  :data="tabs"  @change="changeHandler">
         </cube-tab-bar>
     </div>
 </template>
 
 <script>
     export default {
+
         data() {
             return {
-                selectedLabel: 'msgList',
                 tabs: [{
                     label: '消息',
                     icon: 'cubeic-message',
@@ -27,6 +27,7 @@
         },
         created(){
             let route=this.$route.path
+            console.log(route)
             this.selectedLabel=route.split('/')[2]
 
         },
@@ -40,6 +41,6 @@
 </script>
 
 
-<style scoped>
+<style>
 
 </style>
