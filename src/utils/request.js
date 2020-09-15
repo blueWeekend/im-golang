@@ -18,6 +18,8 @@ const Service = axios.create({
 })
 
 Service.interceptors.request.use(config => {
+  let token=localStorage.getItem('im:access_token')
+  config.headers.Authorization = 'Bearer '+token
   return config
 })
 

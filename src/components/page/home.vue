@@ -1,6 +1,6 @@
 <template>
     <div class="main">
-        <transition :name="transitionName" mode="out-in" v-show="currentTab=='inner'">
+        <transition :name="transitionName" mode="out-in">
             <router-view class="position-div"></router-view>
         </transition>
         <footer v-show="$store.state.isShowBottom">
@@ -22,6 +22,7 @@
         },
         created() {
             let route=this.$route.path
+            var socket = new WebSocket("ws://127.0.0.1:70/ws/connect","qwerasdf");
             if(route.split('/').pop()=='home'){
                 this.$router.push('/home/msgList')
             }
