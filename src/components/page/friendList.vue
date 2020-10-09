@@ -41,6 +41,7 @@
             }
         },
         created() {
+            console.log(this.$store.state)
             for (let index = 0; index < 10; index++) {
                 this.cityData.push(this.cityData[0])
                 

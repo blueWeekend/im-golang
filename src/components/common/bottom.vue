@@ -27,8 +27,8 @@
         },
         created(){
             let route=this.$route.path
-            console.log(route)
-            this.selectedLabel=route.split('/')[2]
+        
+            // this.selectedLabel=route.split('/')[2]
 
         },
         methods: {

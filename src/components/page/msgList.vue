@@ -39,7 +39,7 @@
             }
         },
         created(){
-            console.log(localStorage.im_user_info)
+           
         },
         methods: {
             onItemClick(item) {

@@ -19,10 +19,12 @@ const store = new Vuex.Store({
             state.bottomLabel = label
         },
         setUserInfo(state,payload){
-            state.userId=payload.user_id
-            state.username=payload.username
-            state.email=payload.email
+            state.userInfo=payload
+        },
+        setFriendList(state,payload){
+            state.friendList=payload
         }
+
     }
 })
 export default store
