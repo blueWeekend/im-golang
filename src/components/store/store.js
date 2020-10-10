@@ -5,7 +5,8 @@ const store = new Vuex.Store({
     state: {
         msgList: [],
         isShowBottom: true,
-        bottomLabel:'msgList'
+        bottomLabel:'msgList',
+        friendList:[]
     },
     mutations: {
         pushMsg(state, payload) {
@@ -23,6 +24,7 @@ const store = new Vuex.Store({
         },
         setFriendList(state,payload){
             state.friendList=payload
+            localStorage.setItem('im:friend_list',JSON.stringify(payload))
         }
 
     }

@@ -1,7 +1,9 @@
 <template>
     <div class="main">
         <transition :name="transitionName" mode="out-in">
-            <router-view class="position-div"></router-view>
+            <keep-alive>
+                <router-view class="position-div"></router-view>
+            </keep-alive>
         </transition>
         <footer v-show="$store.state.isShowBottom">
             <bottom></bottom>
@@ -17,12 +19,14 @@
         data() {
             return {
                 currentTab: 'msg',
-                transitionName: ''
+                transitionName: '',
+                socket:null,
             }
         },
         created() {
             let route=this.$route.path
-            var socket = new WebSocket("ws://127.0.0.1:70/ws/connect","qwerasdf");
+            let token=localStorage.getItem("im:access_token")
+            this.socket = new WebSocket("ws://127.0.0.1:70/ws/connect",token);
             if(route.split('/').pop()=='home'){
                 this.$router.push('/home/msgList')
             }

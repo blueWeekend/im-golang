@@ -6,29 +6,9 @@
 <script>
     const cityData = [
         {
-            "name": "★Hot City",
-            "items": [
-                {
-                    "name": "BEIJING",
-                    "value": 1
-                },
-                {
-                    "name": "SHANGHAI",
-                    "value": 2
-                }
-            ]
-        },
-        {
             "name": "A",
             "items": [
-                {
-                    "name": "ANSHAN",
-                    "value": 3
-                },
-                {
-                    "name": "ANQING",
-                    "value": 4
-                }
+               
             ]
         }
     ]
@@ -41,11 +21,16 @@
             }
         },
         created() {
+            let data=JSON.parse(localStorage.getItem('im:friend_list'))
             console.log(this.$store.state)
-            for (let index = 0; index < 10; index++) {
-                this.cityData.push(this.cityData[0])
-                
+            //let data=this.$store.state.friendList
+            for(let item of data){
+                this.cityData[0].items.push({
+                    'name':item.nickname,
+                    'value':item.friend_id
+                })
             }
+         
         },
         methods: {
             selectItem(item) {
