@@ -23,7 +23,10 @@ const store = new Vuex.Store({
             state.userInfo=payload
         },
         setFriendList(state,payload){
-            state.friendList=payload
+            //state.friendList=payload
+            for(let item of payload){
+                state.friendList[item['friend_id']]=item
+            }
             localStorage.setItem('im:friend_list',JSON.stringify(payload))
         }
 

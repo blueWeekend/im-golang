@@ -13,9 +13,9 @@
                 </div>
             </template>
         </cube-recycle-list> -->
-        <header><i class="cubeic-back" @click="back()"></i>&nbsp;&nbsp;&nbsp;sdf</header>
+        <header><i class="cubeic-back" @click="back()"></i>&nbsp;&nbsp;&nbsp;{{nickname}}</header>
         <div class="list" ref="list">  
-            <div v-for="(data,index) in list" :class="data.class" @click="handleClick(data)">
+            <div v-for="(data,index) in list" :key="index" :class="data.class" @click="handleClick(data)">
                 <div class="avatar" :style="{backgroundImage: 'url(' + (data.avatar || '') + ')'}"></div>
                 <div class="bubble">
                     <p>{{ data.msg }}</p>
@@ -45,12 +45,16 @@
                 id: 0,
                 chatContent: '',
                 list: [],
+                friendId:'',
+                nickname:'',
             }
         },
         created() {
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 5; i++) {
                 this.list.push(this.getItem(this.id++))
             }
+            this.friendId=this.$route.params.friendId
+            this.nickname=this.$store.state.friendList[this.friendId]['nickname']
         },
         methods: {
             getItem(id) {

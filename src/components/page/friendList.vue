@@ -22,6 +22,7 @@
         },
         created() {
             let data=JSON.parse(localStorage.getItem('im:friend_list'))
+            this.$store.commit('setFriendList',data)
             console.log(this.$store.state)
             //let data=this.$store.state.friendList
             for(let item of data){
@@ -34,20 +35,8 @@
         },
         methods: {
             selectItem(item) {
-                // this.$store.commit('pushMsg',{
-                //     item: {
-                //         text: '测试3',
-                //         value: 3
-                //     },
-                //     btns: [
-                //         {
-                //             action: 'delete',
-                //             text: '删除',
-                //             color: '#ff3a32'
-                //         }
-                //     ]
-                // })
-                this.$router.push('/home/friendList/dialog')
+            
+                this.$router.push('/home/friendList/dialog/'+item.value)
             },
             clickTitle(title) {
                 console.log(title)
