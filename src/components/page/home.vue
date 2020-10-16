@@ -40,6 +40,10 @@
                 this.$store.commit('setFriendList',data.friend_list)
                 this.$store.commit('finishInit')
                 this.socket = new WebSocket("ws://127.0.0.1:70/ws/connect",token)
+                this.socket.onmessage=this.onmessage()
+            },
+            onmessage(data){
+                console.log(data)
             }
         },
         components: {

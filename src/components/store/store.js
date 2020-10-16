@@ -4,18 +4,23 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
         isInit:false,
-        msgList: [],
+        latelyMsgList: {},
         isShowBottom: true,
         bottomLabel:'msgList',
-        friendList:[]
+        friendList:{}
     },
     mutations: {
         finishInit(state){
             state.isInit=true
         },
         pushMsg(state, payload) {
-            //state.msgList[payload['targetId']].push(payload)
-            state.msgList.push(payload)
+            for(let i in state.latelyMsgList){
+                if(state.latelyMsgList[i]['key']==payload['key']){
+                    state.latelyMsgList[i]['list'].push(payload['val'])
+                    return
+                }
+            }
+            state.latelyMsgList.unshift({'key':payload['key'],'list':[payload['val']]})
         },
         setShowBottomFlag(state, flag) {
             state.isShowBottom = flag

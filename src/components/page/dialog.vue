@@ -16,7 +16,7 @@
         <header><i class="cubeic-back" @click="back()"></i>&nbsp;&nbsp;&nbsp;{{nickname}}</header>
         <div class="list" ref="list">  
             <div v-for="(data,index) in list" :key="index" :class="data.class" @click="handleClick(data)">
-                <div class="avatar" :style="{backgroundImage: 'url(' + (data.avatar || '') + ')'}"></div>
+                <div class="avatar" :style="{backgroundImage: 'url(' + (avatar || '') + ')'}"></div>
                 <div class="bubble">
                     <p>{{ data.msg }}</p>
                     <div class="meta">
@@ -47,19 +47,25 @@
                 list: [],
                 friendId:'',
                 nickname:'',
+                avatar: require('./avatar.png'),
             }
         },
         created() {
-            for (let i = 0; i < 5; i++) {
-                this.list.push(this.getItem(this.id++))
+            if(this.$store.state.isInit){
+                this.init()
             }
-            this.friendId=this.$route.params.friendId
-            this.nickname=this.$store.state.friendList[this.friendId]['nickname']
         },
         methods: {
+            init(){
+                for (let i = 0; i < 5; i++) {
+                    this.list.push(this.getItem(this.id++))
+                }
+                this.friendId=this.$route.params.friendId
+                this.nickname=this.$store.state.friendList[this.friendId]['nickname']
+            },
             getItem(id) {
                 return {
-                    avatar: require('./avatar.png'),
+                   
                     msg: id,
                     class:'item-left',
                     time: this.formatTime()
@@ -70,14 +76,13 @@
             },
             sendMsg() {
                 this.list.push({
-                    avatar: require('./avatar.png'),
                     msg: this.chatContent,
                     class:'item-right',
                     time: this.formatTime()
                 })
                 this.chatContent = ''
                 this.$nextTick(() => {
-                    this.$refs.list.scrollTop = this.$refs.list.scrollHeight;
+                    this.$refs.list.scrollTop = this.$refs.list.scrollHeight
                     console.log(this.$refs.msg)
                     this.$refs.msg.focus();
                 })
@@ -103,18 +108,27 @@
                 return y + "-" + MM + "-" + d + " " + h + ":" + m;
             }
         },
+        watch:{
+            "$store.state.isInit":function(val){
+                if(!val){
+                    return
+                }
+                this.init()
+            }
+            
+        }
     }
 </script>
 
 
 <style lang="stylus" rel="stylesheet/stylus">
     header{
-        position: absolute;
+        //position: absolute;
         background-color: #eee;
         width: 100%;
         height: 40px;
         line-height: 40px;
-        border-bottom: 0.5px solid #E2E2E2;
+        //border-bottom: 0.5px solid #E2E2E2;
         z-index: 99;
         padding-left: 15px;
         
@@ -126,7 +140,7 @@
         list-style-type: none;
         text-align: center;
         background: #eee;
-        height: 94%;
+        height: 89%;
         overflow-y: auto;
         .item-left {
             display: flex;

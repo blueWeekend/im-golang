@@ -21,9 +21,6 @@
             }
         },
         created() {
-            //let data=JSON.parse(localStorage.getItem('im:friend_list'))
-            // this.$store.commit('setFriendList',data)
-            //console.log(this.$store.state)
             if(this.$store.state.isInit){
                 this.init()
             }
