@@ -3,12 +3,16 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
+        isInit:false,
         msgList: [],
         isShowBottom: true,
         bottomLabel:'msgList',
         friendList:[]
     },
     mutations: {
+        finishInit(state){
+            state.isInit=true
+        },
         pushMsg(state, payload) {
             //state.msgList[payload['targetId']].push(payload)
             state.msgList.push(payload)

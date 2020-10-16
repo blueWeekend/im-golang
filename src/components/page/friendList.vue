@@ -21,19 +21,26 @@
             }
         },
         created() {
-            let data=JSON.parse(localStorage.getItem('im:friend_list'))
-            this.$store.commit('setFriendList',data)
-            console.log(this.$store.state)
-            //let data=this.$store.state.friendList
-            for(let item of data){
-                this.cityData[0].items.push({
-                    'name':item.nickname,
-                    'value':item.friend_id
-                })
+            //let data=JSON.parse(localStorage.getItem('im:friend_list'))
+            // this.$store.commit('setFriendList',data)
+            //console.log(this.$store.state)
+            if(this.$store.state.isInit){
+                this.init()
             }
-         
         },
         methods: {
+            init(){
+                let data=this.$store.state.friendList
+                console.log(data)
+                let arr=[]
+                for(let i in data){
+                    arr.push({
+                        'name':data[i]['nickname'],
+                        'value':data[i]['friend_id']
+                    })
+                }
+                this.cityData[0].items=arr
+            },
             selectItem(item) {
             
                 this.$router.push('/home/friendList/dialog/'+item.value)
@@ -42,6 +49,16 @@
                 console.log(title)
             }
         },
+        watch:{
+            "$store.state.isInit":function(val){
+                if(!val){
+                    return
+                }
+                console.log(val)
+                this.init()
+            }
+            
+        }
     }
 </script>
 

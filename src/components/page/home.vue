@@ -13,8 +13,9 @@
 </template>
 
 <script>
-    import friendList from '@/components/page/friendList'
     import bottom from '@/components/common/bottom'
+    import {getUserInfo} from '@/api/user'
+    import {getToken} from '@/utils/global'
     export default {
         data() {
             return {
@@ -25,17 +26,24 @@
         },
         created() {
             let route=this.$route.path
-            let token=localStorage.getItem("im:access_token")
-            this.socket = new WebSocket("ws://127.0.0.1:70/ws/connect",token);
             if(route.split('/').pop()=='home'){
                 this.$router.push('/home/msgList')
             }
+            let token=getToken()
+            getUserInfo().then(data=>{
+                this.init(data,token)
+            })
         },
         methods: {
-            
+            init(data,token){
+                this.$store.commit('setUserInfo',data.user_info)
+                this.$store.commit('setFriendList',data.friend_list)
+                this.$store.commit('finishInit')
+                this.socket = new WebSocket("ws://127.0.0.1:70/ws/connect",token)
+            }
         },
         components: {
-            bottom, friendList
+            bottom
         },
         // watch: {
         //     $route(to, from) {

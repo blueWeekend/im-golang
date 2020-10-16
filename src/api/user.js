@@ -7,3 +7,10 @@ export function loginByPwd(data) {
     data: data
   })
 }
+export function getUserInfo(data) {
+  return request({
+    url: 'user/getUserInfo',
+    method: 'post',
+    data: data
+  })
+}
