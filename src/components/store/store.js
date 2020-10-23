@@ -4,7 +4,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
         isInit:false,
-        latelyMsgList: {},
+        latelyMsgList: [],
         isShowBottom: true,
         bottomLabel:'msgList',
         friendList:{},
@@ -20,11 +20,11 @@ const store = new Vuex.Store({
         pushMsg(state, payload) {
             for(let i in state.latelyMsgList){
                 if(state.latelyMsgList[i]['key']==payload['key'] && state.latelyMsgList[i]['type']==payload['type']){
-                    state.latelyMsgList[i]['list'].push({status:0,content:payload['val']})
+                    state.latelyMsgList[i]['list'].push({status:0,content:payload['content']})
                     return
                 }
             }
-            state.latelyMsgList.unshift({key:payload['key'],type:payload['type'],list:[{status:0,content:payload['val']}]})
+            state.latelyMsgList.unshift({key:payload['key'],type:payload['type'],list:[{status:0,content:payload['content']}]})
         },
         setShowBottomFlag(state, flag) {
             state.isShowBottom = flag
