@@ -14,3 +14,6 @@ export function getUserInfo(data) {
     data: data
   })
 }
+export function getWsConnect(token){
+  return new WebSocket("ws://127.0.0.1:70/ws/connect",token)
+}

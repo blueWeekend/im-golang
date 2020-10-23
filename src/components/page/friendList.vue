@@ -28,7 +28,7 @@
         methods: {
             init(){
                 let data=this.$store.state.friendList
-                console.log(data)
+                
                 let arr=[]
                 for(let i in data){
                     arr.push({
@@ -41,6 +41,14 @@
             selectItem(item) {
             
                 this.$router.push('/home/friendList/dialog/'+item.value)
+            },
+            getMsgIndex(friendId,type){
+                for(const [key,item] of this.$store.state.friendList){
+                    if(item['key']==friendId && item['type']==type){
+                        return key
+                    }
+                }
+                
             },
             clickTitle(title) {
                 console.log(title)
