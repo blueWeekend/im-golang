@@ -61,6 +61,7 @@
                     this.list.push(this.getItem(this.id++))
                 }
                 this.friendId=this.$route.params.friendId
+                console.log(this.$store.state.friendList)
                 this.nickname=this.$store.state.friendList[this.friendId]['nickname']
             },
             getItem(id) {

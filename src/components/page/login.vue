@@ -41,9 +41,10 @@
                     localStorage.setItem("im:access_token",data.access_token)
                     this.$store.commit('setUserInfo',data.user_info)
                     this.$store.commit('setFriendList',data.friend_list)
-                    
+                    this.$store.commit('finishInit')
                     let path=this.$route.query.redirect || '/home/msgList'
                     this.$router.push(path)
+
                 })
             }
         }
