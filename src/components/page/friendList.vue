@@ -40,16 +40,17 @@
             },
             selectItem(item) {
                 let index=this.getMsgIndex(item.value,1)
+                console.log(index)
                 this.$router.push('/home/friendList/dialog/'+item.value+'/'+index)
             },
             getMsgIndex(friendId,type){
-                for(const [key,item] of this.$store.state.latelyMsgList){
-                   
-                    if(item['key']==friendId && item['type']==type){
-                        return key
+                
+                for(let i in this.$store.state.latelyMsgList){
+                    if(this.$store.state.latelyMsgList[i]['key']==friendId && this.$store.state.latelyMsgList[i]['type']==type){
+                        return i
                     }
                 }
-                this.$store.commit('pushMsg',{'key':friendId,'type':type,'content':''})
+                this.$store.commit('pushMsg',{key:friendId,type:type,content:'',time:0,isSelf:1})
                 return 0
 
             },
@@ -62,7 +63,6 @@
                 if(!val){
                     return
                 }
-                console.log(val)
                 this.init()
             }
             

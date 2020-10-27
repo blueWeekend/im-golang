@@ -15,10 +15,10 @@
         </cube-recycle-list> -->
         <header><i class="cubeic-back" @click="back()"></i>&nbsp;&nbsp;&nbsp;{{nickname}}</header>
         <div class="list" ref="list">  
-            <div v-for="(data,index) in $store.state.latelyMsgList[$route.params.msgIndex]" :key="index" :class="data.class" @click="handleClick(data)">
+            <div v-for="(data,index) in $store.state.latelyMsgList[msgIndex]['list']" :key="index" :class="data.isSelf==1?'item-right':'item-left'" @click="handleClick(data)">
                 <div class="avatar" :style="{backgroundImage: 'url(' + (avatar || '') + ')'}"></div>
                 <div class="bubble">
-                    <p>{{ data.msg }}</p>
+                    <p>{{ data.content }}</p>
                     <div class="meta">
                         <time class="posted-date">{{ data.time }}</time>
                     </div>
@@ -44,7 +44,7 @@
             return {
                 id: 0,
                 chatContent: '',
-                list: [],
+                list:[],
                 friendId:'',
                 msgIndex:'',
                 nickname:'',
@@ -52,17 +52,15 @@
             }
         },
         created() {
+            this.friendId=this.$route.params.friendId
+            this.msgIndex=this.$route.params.msgIndex
             if(this.$store.state.isInit){
                 this.init()
             }
+          
         },
         methods: {
             init(){
-                for (let i = 0; i < 5; i++) {
-                    this.list.push(this.getItem(this.id++))
-                }
-                this.friendId=this.$route.params.friendId
-                this.msgIndex=this.$route.params.msgIndex
                 this.nickname=this.$store.state.friendList[this.friendId]['nickname']
             },
             getItem(id) {
@@ -77,11 +75,7 @@
                 console.log(data)
             },
             sendMsg() {
-                this.list.push({
-                    msg: this.chatContent,
-                    class:'item-right',
-                    time: this.formatTime()
-                })
+                this.$store.commit('pushMsg',{key:this.friendId,type:1,content:this.chatContent,time:0,isSelf:1})
                 this.chatContent = ''
                 this.$nextTick(() => {
                     this.$refs.list.scrollTop = this.$refs.list.scrollHeight
