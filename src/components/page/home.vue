@@ -14,8 +14,8 @@
 
 <script>
     import bottom from '@/components/common/bottom'
-    import {getUserInfo} from '@/api/user'
-    import {getToken} from '@/utils/global'
+    import {getUserInfo,getWsConnect} from '@/api/user'
+    import {getToken,logout,EVENT_MAP,SRC_MAP} from '@/utils/global'
     export default {
         data() {
             return {
@@ -30,6 +30,9 @@
                 this.$router.push('/home/msgList')
             }
             let token=getToken()
+            if(!token){
+                return
+            }
             getUserInfo().then(data=>{
                 this.init(data,token)
             })
@@ -38,12 +41,29 @@
             init(data,token){
                 this.$store.commit('setUserInfo',data.user_info)
                 this.$store.commit('setFriendList',data.friend_list)
+                this.$store.commit('setSocket',getWsConnect(token))
                 this.$store.commit('finishInit')
-                this.socket = new WebSocket("ws://127.0.0.1:70/ws/connect",token)
-                this.socket.onmessage=this.onmessage()
+               
+                this.$store.state.socket.onmessage=this.onmessage
             },
-            onmessage(data){
-                console.log(data)
+            onmessage(res){
+                let data=JSON.parse(res.data)
+                switch(data.event){
+                    case EVENT_MAP.MSG:
+                        let msg={
+                            key:data.user_id,
+                            type:data.src_type,
+                            content:data.content,
+                            time:new Date().getTime(),
+                            isSelf:0
+                        }
+                        this.$store.commit('pushMsg',msg)
+                        break
+                    case EVENT_MAP.NOT_LOGIN:
+                        logout()
+                        break
+                    case EVENT_MAP.PING:;break
+                }
             }
         },
         components: {

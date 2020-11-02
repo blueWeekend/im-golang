@@ -28,7 +28,7 @@
         methods: {
             init(){
                 let data=this.$store.state.friendList
-                console.log(data)
+                
                 let arr=[]
                 for(let i in data){
                     arr.push({
@@ -39,8 +39,20 @@
                 this.cityData[0].items=arr
             },
             selectItem(item) {
-            
-                this.$router.push('/home/friendList/dialog/'+item.value)
+                let index=this.getMsgIndex(item.value,1)
+                console.log(index)
+                this.$router.push('/home/friendList/dialog/'+item.value+'/'+index)
+            },
+            getMsgIndex(friendId,type){
+                
+                for(let i in this.$store.state.latelyMsgList){
+                    if(this.$store.state.latelyMsgList[i]['key']==friendId && this.$store.state.latelyMsgList[i]['type']==type){
+                        return i
+                    }
+                }
+                this.$store.commit('pushMsg',{key:friendId,type:type,content:'',time:0,isSelf:1})
+                return 0
+
             },
             clickTitle(title) {
                 console.log(title)
@@ -51,7 +63,6 @@
                 if(!val){
                     return
                 }
-                console.log(val)
                 this.init()
             }
             

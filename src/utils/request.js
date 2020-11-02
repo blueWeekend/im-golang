@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Toast } from 'cube-ui'
+import {logout} from '@/utils/global'
 const CODE_OK = 200
 // if (process.env.NODE_ENV === 'production') {
 //   ConfigBaseURL = window.location.protocol + "//" + window.location.host
@@ -7,7 +8,7 @@ const CODE_OK = 200
 //   ConfigBaseURL = process.env.VUE_APP_BASE_URL
 // }
 let ConfigBaseURL="http://127.0.0.1:70/" 
-const CODE_NOTLOGIN = 401
+const CODE_NOT_LOGIN = 401
 const Service = axios.create({
   timeout: 15000,
   baseURL: ConfigBaseURL,
@@ -25,9 +26,8 @@ Service.interceptors.request.use(config => {
 
 Service.interceptors.response.use(response => {
   const res = response.data
-  if (res.code === CODE_NOTLOGIN) {
-    localStorage.imUserInfo=null
-    location.reload()
+  if (res.code === CODE_NOT_LOGIN) {
+    logout()
   }  else if (res.code !== CODE_OK) {
     const toast = Toast.$create({
       time: 1000,

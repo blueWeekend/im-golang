@@ -15,12 +15,12 @@
         </cube-recycle-list> -->
         <header><i class="cubeic-back" @click="back()"></i>&nbsp;&nbsp;&nbsp;{{nickname}}</header>
         <div class="list" ref="list">  
-            <div v-for="(data,index) in list" :key="index" :class="data.class" @click="handleClick(data)">
+            <div v-for="(data,index) in $store.state.latelyMsgList[msgIndex]['list']" :key="index" :class="data.isSelf==1?'item-right':'item-left'" @click="handleClick(data)">
                 <div class="avatar" :style="{backgroundImage: 'url(' + (avatar || '') + ')'}"></div>
                 <div class="bubble">
-                    <p>{{ data.msg }}</p>
+                    <p>{{ data.content }}</p>
                     <div class="meta">
-                        <time class="posted-date">{{ data.time }}</time>
+                        <time class="posted-date">{{ formatTime(data.time) }}</time>
                     </div>
                 </div>
             </div>  
@@ -38,30 +38,29 @@
 </template>
 
 <script>
-
+    import {EVENT_MAP,SRC_MAP,CNT_MAP} from '@/utils/global'
     export default {
         data() {
             return {
                 id: 0,
                 chatContent: '',
-                list: [],
+                list:[],
                 friendId:'',
+                msgIndex:'',
                 nickname:'',
                 avatar: require('./avatar.png'),
             }
         },
         created() {
+            this.friendId=parseInt(this.$route.params.friendId)
+            this.msgIndex=this.$route.params.msgIndex
             if(this.$store.state.isInit){
                 this.init()
             }
+          
         },
         methods: {
             init(){
-                for (let i = 0; i < 5; i++) {
-                    this.list.push(this.getItem(this.id++))
-                }
-                this.friendId=this.$route.params.friendId
-                console.log(this.$store.state.friendList)
                 this.nickname=this.$store.state.friendList[this.friendId]['nickname']
             },
             getItem(id) {
@@ -76,11 +75,23 @@
                 console.log(data)
             },
             sendMsg() {
-                this.list.push({
-                    msg: this.chatContent,
-                    class:'item-right',
-                    time: this.formatTime()
-                })
+                let msg={
+                    key:this.friendId,
+                    type:SRC_MAP.FRIEND,
+                    content:this.chatContent,
+                    time:new Date().getTime(),
+                    isSelf:1
+                }
+                this.$store.commit('pushMsg',msg)
+                let data={
+                    event:EVENT_MAP.MSG,
+                    user_id:this.$store.state.userInfo['user_id'],
+                    src_type:SRC_MAP.FRIEND,
+                    cnt_type:CNT_MAP.TEXT,
+                    content:this.chatContent,
+                    target_id:this.friendId
+                }
+                this.$store.state.socket.send(JSON.stringify(data))
                 this.chatContent = ''
                 this.$nextTick(() => {
                     this.$refs.list.scrollTop = this.$refs.list.scrollHeight
