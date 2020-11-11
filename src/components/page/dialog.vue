@@ -83,7 +83,7 @@
                     time:new Date().getTime(),
                     isSelf:1
                 }
-                console.log(msg)
+                
                 this.$store.commit('pushMsg',msg)
                 let data={
                     event:EVENT_MAP.MSG,
@@ -97,7 +97,6 @@
                 this.chatContent = ''
                 this.$nextTick(() => {
                     this.$refs.list.scrollTop = this.$refs.list.scrollHeight
-                    console.log(this.$refs.msg)
                     this.$refs.msg.focus();
                 })
                 

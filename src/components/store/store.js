@@ -20,7 +20,10 @@ const store = new Vuex.Store({
             state.socket=payload
         },
         pushMsg(state, payload) {
-            if(state.latelyMsgList[payload['key']] && payload['content']){
+            if(state.latelyMsgList[payload['key']]){
+                if(!payload['content']){
+                    return
+                }
                 state.latelyMsgList[payload['key']].push({status:0,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']})
                 for(let i in state.latelyMsgIndex){
                     if(state.latelyMsgIndex[i]==payload['key']){
@@ -28,6 +31,7 @@ const store = new Vuex.Store({
                             state.latelyMsgIndex[j]=state.latelyMsgIndex[j-1]
                         }
                         state.latelyMsgIndex[0]=payload['key']
+                        console.log(state.latelyMsgList)
                         return
                     }
                 }
@@ -36,6 +40,7 @@ const store = new Vuex.Store({
                 state.latelyMsgIndex.unshift(payload['key'])
                 state.latelyMsgList[payload['key']]=payload['content']?[{status:0,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']}]:[]
             }
+            console.log(state.latelyMsgList)
         },
         setShowBottomFlag(state, flag) {
             state.isShowBottom = flag

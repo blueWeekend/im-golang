@@ -40,20 +40,12 @@
                 this.cityData[0].items=arr
             },
             selectItem(item) {
-                // let index=this.getMsgIndex(item.value,1)
-                // console.log(index)
-                this.$router.push('/home/friendList/dialog/'+item.value+'/'+SRC_MAP.FRIEND)
-            },
-            getMsgIndex(friendId,type){
-                
-                for(let i in this.$store.state.latelyMsgList){
-                    if(this.$store.state.latelyMsgList[i]['key']==friendId && this.$store.state.latelyMsgList[i]['type']==type){
-                        return i
-                    }
+                 let msg={
+                    key:SRC_MAP.FRIEND+'-'+item.value,
+                    content:'',
                 }
-                this.$store.commit('pushMsg',{key:friendId,type:type,content:'',time:0,isSelf:1})
-                return 0
-
+                this.$store.commit('pushMsg',msg)
+                this.$router.push('/home/friendList/dialog/'+item.value+'/'+SRC_MAP.FRIEND)
             },
             clickTitle(title) {
                 console.log(title)

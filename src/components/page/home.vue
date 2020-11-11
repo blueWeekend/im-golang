@@ -56,8 +56,9 @@
                             time:new Date().getTime(),
                             isSelf:0
                         }
-                        console.log(msg)
+                        
                         this.$store.commit('pushMsg',msg)
+                        
                         break
                     case EVENT_MAP.NOT_LOGIN:
                         logout()
