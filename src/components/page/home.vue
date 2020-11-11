@@ -51,12 +51,12 @@
                 switch(data.event){
                     case EVENT_MAP.MSG:
                         let msg={
-                            key:data.user_id,
-                            type:data.src_type,
+                            key:data.src_type+'-'+data.user_id,
                             content:data.content,
                             time:new Date().getTime(),
                             isSelf:0
                         }
+                        console.log(msg)
                         this.$store.commit('pushMsg',msg)
                         break
                     case EVENT_MAP.NOT_LOGIN:

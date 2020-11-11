@@ -5,7 +5,8 @@ const store = new Vuex.Store({
     state: {
         isInit:false,
         userInfo:{},
-        latelyMsgList: [],
+        latelyMsgList: {},
+        latelyMsgIndex:[],
         isShowBottom: true,
         bottomLabel:'msgList',
         friendList:{},
@@ -19,13 +20,22 @@ const store = new Vuex.Store({
             state.socket=payload
         },
         pushMsg(state, payload) {
-            for(let i in state.latelyMsgList){
-                if(state.latelyMsgList[i]['key']==payload['key'] && state.latelyMsgList[i]['type']==payload['type']){
-                    state.latelyMsgList[i]['list'].push({status:0,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']})
-                    return
+            if(state.latelyMsgList[payload['key']] && payload['content']){
+                state.latelyMsgList[payload['key']].push({status:0,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']})
+                for(let i in state.latelyMsgIndex){
+                    if(state.latelyMsgIndex[i]==payload['key']){
+                        for(let j=i;j>0;j--){
+                            state.latelyMsgIndex[j]=state.latelyMsgIndex[j-1]
+                        }
+                        state.latelyMsgIndex[0]=payload['key']
+                        return
+                    }
                 }
+
+            }else{
+                state.latelyMsgIndex.unshift(payload['key'])
+                state.latelyMsgList[payload['key']]=payload['content']?[{status:0,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']}]:[]
             }
-            state.latelyMsgList.unshift({key:payload['key'],type:payload['type'],list:payload['content']?[{status:0,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']}]:[]})
         },
         setShowBottomFlag(state, flag) {
             state.isShowBottom = flag

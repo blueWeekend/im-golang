@@ -15,7 +15,7 @@
         </cube-recycle-list> -->
         <header><i class="cubeic-back" @click="back()"></i>&nbsp;&nbsp;&nbsp;{{nickname}}</header>
         <div class="list" ref="list">  
-            <div v-for="(data,index) in $store.state.latelyMsgList[msgIndex]['list']" :key="index" :class="data.isSelf==1?'item-right':'item-left'" @click="handleClick(data)">
+            <div v-for="(data,index) in $store.state.latelyMsgList[msgKey]" :key="index" :class="data.isSelf==1?'item-right':'item-left'" @click="handleClick(data)">
                 <div class="avatar" :style="{backgroundImage: 'url(' + (avatar || '') + ')'}"></div>
                 <div class="bubble">
                     <p>{{ data.content }}</p>
@@ -46,14 +46,16 @@
                 chatContent: '',
                 list:[],
                 friendId:'',
-                msgIndex:'',
+                srcType:'',
+                msgKey:'',
                 nickname:'',
                 avatar: require('./avatar.png'),
             }
         },
         created() {
             this.friendId=parseInt(this.$route.params.friendId)
-            this.msgIndex=this.$route.params.msgIndex
+            this.srcType=this.$route.params.srcType
+            this.msgKey=this.srcType+'-'+this.friendId
             if(this.$store.state.isInit){
                 this.init()
             }
@@ -76,12 +78,12 @@
             },
             sendMsg() {
                 let msg={
-                    key:this.friendId,
-                    type:SRC_MAP.FRIEND,
+                    key:SRC_MAP.FRIEND+'-'+this.friendId,
                     content:this.chatContent,
                     time:new Date().getTime(),
                     isSelf:1
                 }
+                console.log(msg)
                 this.$store.commit('pushMsg',msg)
                 let data={
                     event:EVENT_MAP.MSG,

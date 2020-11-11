@@ -4,6 +4,7 @@
 </template>
 
 <script>
+    import {SRC_MAP} from '@/utils/global'
     const cityData = [
         {
             "name": "A",
@@ -39,9 +40,9 @@
                 this.cityData[0].items=arr
             },
             selectItem(item) {
-                let index=this.getMsgIndex(item.value,1)
-                console.log(index)
-                this.$router.push('/home/friendList/dialog/'+item.value+'/'+index)
+                // let index=this.getMsgIndex(item.value,1)
+                // console.log(index)
+                this.$router.push('/home/friendList/dialog/'+item.value+'/'+SRC_MAP.FRIEND)
             },
             getMsgIndex(friendId,type){
                 
