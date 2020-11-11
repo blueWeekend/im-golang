@@ -16,7 +16,7 @@
         <header><i class="cubeic-back" @click="back()"></i>&nbsp;&nbsp;&nbsp;{{nickname}}</header>
         <div class="list" ref="list">  
             <div v-for="(data,index) in $store.state.latelyMsgList[msgKey]" :key="index" :class="data.isSelf==1?'item-right':'item-left'" @click="handleClick(data)">
-                <div class="avatar" :style="{backgroundImage: 'url(' + (avatar || '') + ')'}"></div>
+                <div class="avatar" :style="{backgroundImage: 'url(' + avatar + ')'}"></div>
                 <div class="bubble">
                     <p>{{ data.content }}</p>
                     <div class="meta">
