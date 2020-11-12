@@ -2,14 +2,14 @@
     <div class="swipe-wrapper">
         <cube-scroll>
             <cube-swipe>
-                <li class="swipe-item-wrapper" v-for="(data,index) in swipeData">
-                    <div @click="onItemClick(data, index)" class="item-inner">
+                <li class="swipe-item-wrapper" v-for="(data,index) in $store.state.latelyMsgIndex" :key="index">
+                    <div @click="onItemClick(data)" class="item-inner">
                         <div class="icon">
-                            <img width="45" height="45" :src="data.avatar">
+                            <img width="45" height="45" :src="avatar">
                         </div>
                         <div class="text">
-                            <h2 class="target-name" v-html="data.text"></h2>
-                            <h3 class="last-msg">sadfasdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa</h3>
+                            <h2 class="target-name" v-html="friendIdnicknameMap[index]"></h2>
+                            <h3 class="last-msg">{{$store.state.latelyMsgList[data].length>0?$store.state.latelyMsgList[data][$store.state.latelyMsgList[data].length-1]['content']:''}}</h3>
                         </div>
                     </div>
                 </li>
@@ -19,9 +19,12 @@
 </template>
 
 <script>
+    import {SRC_MAP} from '@/utils/global'
     export default {
+        name:'im-msgList',
         data() {
             return {
+                avatar:require('./avatar.png'),
                 swipeData: [{
                         text: '测试1',
                         avatar: require('./avatar.png'),
@@ -42,14 +45,22 @@
            
         },
         methods: {
-            onItemClick(item) {
-                console.log('click item:', item)
-                this.$router.push('/home/friendList/dialog')
+            onItemClick(typeAndFriendkey) {
+                let arr=typeAndFriendkey.split('-')
+                let msg={
+                    key:typeAndFriendkey,
+                    content:'',
+                }
+                this.$store.commit('pushMsg',msg)
+                this.$router.push('/home/friendList/dialog/'+arr[1]+'/'+SRC_MAP.FRIEND)
             },
         },
         computed: {
-            listData() {
-                return this.$store.state.msgList
+            friendIdnicknameMap() {
+                return this.$store.state.latelyMsgIndex.map(item => {
+                    let friendId=item.split('-')[1]
+                    return this.$store.state.friendList[friendId]['nickname']
+                })
             }
         },
     }

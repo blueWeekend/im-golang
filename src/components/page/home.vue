@@ -1,7 +1,7 @@
 <template>
     <div class="main">
         <transition :name="transitionName" mode="out-in">
-            <keep-alive>
+            <keep-alive :exclude="NOT_KEEP_ALIVE_ROUTE">
                 <router-view class="position-div"></router-view>
             </keep-alive>
         </transition>
@@ -15,10 +15,11 @@
 <script>
     import bottom from '@/components/common/bottom'
     import {getUserInfo,getWsConnect} from '@/api/user'
-    import {getToken,logout,EVENT_MAP,SRC_MAP} from '@/utils/global'
+    import {getToken,logout,EVENT_MAP,SRC_MAP,NOT_KEEP_ALIVE_ROUTE} from '@/utils/global'
     export default {
         data() {
             return {
+                NOT_KEEP_ALIVE_ROUTE:NOT_KEEP_ALIVE_ROUTE,
                 currentTab: 'msg',
                 transitionName: '',
                 socket:null,

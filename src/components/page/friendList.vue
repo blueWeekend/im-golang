@@ -40,7 +40,7 @@
                 this.cityData[0].items=arr
             },
             selectItem(item) {
-                 let msg={
+                let msg={
                     key:SRC_MAP.FRIEND+'-'+item.value,
                     content:'',
                 }

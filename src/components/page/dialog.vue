@@ -40,6 +40,7 @@
 <script>
     import {EVENT_MAP,SRC_MAP,CNT_MAP} from '@/utils/global'
     export default {
+        name: "im-dialog",
         data() {
             return {
                 id: 0,
