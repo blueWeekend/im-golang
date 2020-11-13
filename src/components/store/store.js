@@ -24,20 +24,21 @@ const store = new Vuex.Store({
         },
         pushMsg(state, payload) {
             console.log(state)
-            if(state.latelyMsgList[payload['key']]){
+            let key=payload['src_type']+'-'+(payload['isSelf']===1?payload['target_id']:payload['user_id'])
+            if(state.latelyMsgList[key]){
                 if(!payload['content']){
                     return
                 }
                 if(payload['isSelf']===0){
                     //确保消息不重
                     let left=0
-                    let right=state.latelyMsgList[payload['key']].length-1
+                    let right=state.latelyMsgList[key].length-1
                     let mid
                     while(left<=right){
                         mid=left+((right-left)>>1)
-                        if(state.latelyMsgList[payload['key']][mid]['time']==payload['time']){
+                        if(state.latelyMsgList[key][mid]['time']==payload['time']){
                             return
-                        }else if(state.latelyMsgList[payload['key']][mid]['time']<payload['time']){
+                        }else if(state.latelyMsgList[key][mid]['time']<payload['time']){
                             left=mid+1
                         }else{
                             right=mid-1
@@ -45,35 +46,36 @@ const store = new Vuex.Store({
                     }
                 }
                 
-                state.latelyMsgList[payload['key']].push({status:MSG_STATUS_MAP.SENDING,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']})
+                state.latelyMsgList[key].push({status:MSG_STATUS_MAP.SENDING,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']})
                 // state.latelyMsgIndex.splice(i,1)
-                // state.latelyMsgIndex.unshift(payload['key'])
+                // state.latelyMsgIndex.unshift(key)
                 for(let i in state.latelyMsgIndex){
-                    if(state.latelyMsgIndex[i]==payload['key']){
+                    if(state.latelyMsgIndex[i]==key){
                         for(let j=i;j>0;j--){
                             state.latelyMsgIndex[j]=state.latelyMsgIndex[j-1]
                         }
-                        state.latelyMsgIndex[0]=payload['key']
+                        state.latelyMsgIndex[0]=key
                         return
                     }
                 }
 
             }else{
-                state.latelyMsgIndex.unshift(payload['key'])
-                Vue.set(state.latelyMsgList, payload['key'], payload['content']?[{status:MSG_STATUS_MAP.SENDING,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']}]:[])
+                state.latelyMsgIndex.unshift(key)
+                Vue.set(state.latelyMsgList, key, payload['content']?[{status:MSG_STATUS_MAP.SENDING,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']}]:[])
             }
            
         },
         confirmMsgArrive(state, payload){
+            let key=payload['src_type']+'-'+payload['user_id']
             let left=0
-            let right=state.latelyMsgList[payload['key']].length-1
+            let right=state.latelyMsgList[key].length-1
             let mid
             while(left<=right){
                 mid=left+((right-left)>>1)
-                if(state.latelyMsgList[payload['key']][mid]['time']==payload['time']){
-                    state.latelyMsgList[payload['key']][mid]['status']=MSG_STATUS_MAP.SUCCESS
+                if(state.latelyMsgList[key][mid]['time']==payload['time']){
+                    state.latelyMsgList[key][mid]['status']=MSG_STATUS_MAP.SUCCESS
                     return
-                }else if(state.latelyMsgList[payload['key']][mid]['time']<payload['time']){
+                }else if(state.latelyMsgList[key][mid]['time']<payload['time']){
                     left=mid+1
                 }else{
                     right=mid-1

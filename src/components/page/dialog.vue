@@ -84,24 +84,34 @@
             sendMsg() {
                 //毫秒时间戳
                 let curTime=new Date().getTime()
+                // let msg={
+                //     key:SRC_MAP.FRIEND+'-'+this.friendId,
+                //     content:this.chatContent,
+                //     time:curTime,
+                //     isSelf:1
+                // }
                 let msg={
-                    key:SRC_MAP.FRIEND+'-'+this.friendId,
-                    content:this.chatContent,
-                    time:curTime,
-                    isSelf:1
-                }
-                
-                this.$store.commit('pushMsg',msg)
-                let data={
                     event:EVENT_MAP.MSG,
                     user_id:this.$store.state.userInfo['user_id'],
                     src_type:SRC_MAP.FRIEND,
                     cnt_type:CNT_MAP.TEXT,
                     content:this.chatContent,
                     target_id:this.friendId,
-                    time:curTime
+                    time:curTime,
+                    isSelf:1
                 }
-                this.$store.state.socket.send(JSON.stringify(data))
+                this.$store.commit('pushMsg',msg)
+                // let data={
+                //     event:EVENT_MAP.MSG,
+                //     user_id:this.$store.state.userInfo['user_id'],
+                //     src_type:SRC_MAP.FRIEND,
+                //     cnt_type:CNT_MAP.TEXT,
+                //     content:this.chatContent,
+                //     target_id:this.friendId,
+                //     time:curTime
+                // }
+                delete msg.isSelf
+                this.$store.state.socket.send(JSON.stringify(msg))
                 this.chatContent = ''
                
                 this.$nextTick(() => {

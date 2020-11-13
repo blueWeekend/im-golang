@@ -97,13 +97,14 @@
                 let msg
                 switch(data.event){
                     case EVENT_MAP.MSG:
-                        msg={
-                            key:data.src_type+'-'+data.user_id,
-                            content:data.content,
-                            time:data.time,
-                            isSelf:0
-                        }
-                        this.$store.commit('pushMsg',msg)
+                        // msg={
+                        //     key:data.src_type+'-'+data.user_id,
+                        //     content:data.content,
+                        //     time:data.time,
+                        //     isSelf:0
+                        // }
+                        data['isSelf']=0
+                        this.$store.commit('pushMsg',data)
                         //ack确保消息必达
                         let ackMsg={
                             user_id:data.target_id,
@@ -116,7 +117,8 @@
                         break
                     case EVENT_MAP.ACK:
                         msg={
-                            key:data.src_type+'-'+data.user_id,
+                            user_id:data.user_id,
+                            src_type:data.src_type,
                             time:data.time,
                         }
                         this.$store.commit('confirmMsgArrive',msg)

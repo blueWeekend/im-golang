@@ -41,8 +41,10 @@
             },
             selectItem(item) {
                 let msg={
-                    key:SRC_MAP.FRIEND+'-'+item.value,
+                    src_type:SRC_MAP.FRIEND,
+                    target_id  :item.value,
                     content:'',
+                    isSelf:1
                 }
                 this.$store.commit('pushMsg',msg)
                 this.$router.push('/home/friendList/dialog/'+item.value+'/'+SRC_MAP.FRIEND)
