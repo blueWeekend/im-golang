@@ -1,6 +1,7 @@
-export const EVENT_MAP={NOT_LOGIN:401,PING:201,MSG:200}
+export const EVENT_MAP={NOT_LOGIN:401,PING:201,MSG:200,ACK:202}
 export const SRC_MAP={FRIEND:1,GROUP:2}
 export const CNT_MAP={TEXT:1,MSG:2,FILE:3}
+export const MSG_STATUS_MAP={SENDING:0,SUCCESS:1,FAIL:-1}
 export const NOT_KEEP_ALIVE_ROUTE=['im-dialog','im-msgList']
 export function getToken() {
     return localStorage.getItem("im:access_token")

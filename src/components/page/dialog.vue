@@ -15,7 +15,7 @@
         </cube-recycle-list> -->
         <header><i class="cubeic-back" @click="back()"></i>&nbsp;&nbsp;&nbsp;{{nickname}}</header>
         <div class="list" ref="list">  
-            <div v-for="(data,index) in $store.state.latelyMsgList[msgKey]" :key="index" :class="data.isSelf==1?'item-right':'item-left'" @click="handleClick(data)">
+            <div v-for="(data,index) in $store.state.latelyMsgList[msgKey]" :key="index" :class="dialogClass[data.isSelf]" @click="handleClick(data)">
                 <div class="avatar" :style="{backgroundImage: 'url(' + avatar + ')'}"></div>
                 <div class="bubble">
                     <p>{{ data.content }}</p>
@@ -23,6 +23,7 @@
                         <time class="posted-date">{{ formatTime(data.time) }}</time>
                     </div>
                 </div>
+                <cube-loading v-if="data.isSelf==1 && data.status==MSG_STATUS_MAP.SENDING" :size="28" style="padding-top:8px"></cube-loading>
             </div>  
         </div>
 
@@ -38,7 +39,8 @@
 </template>
 
 <script>
-    import {EVENT_MAP,SRC_MAP,CNT_MAP} from '@/utils/global'
+    import {EVENT_MAP,SRC_MAP,CNT_MAP,MSG_STATUS_MAP} from '@/utils/global'
+    import communicate from '@/utils/communicate'
     export default {
         name: "im-dialog",
         data() {
@@ -51,6 +53,8 @@
                 msgKey:'',
                 nickname:'',
                 avatar: require('./avatar.png'),
+                dialogClass:['item-left','item-right'],
+                MSG_STATUS_MAP:MSG_STATUS_MAP
             }
         },
         created() {
@@ -78,10 +82,12 @@
                 console.log(data)
             },
             sendMsg() {
+                //毫秒时间戳
+                let curTime=new Date().getTime()
                 let msg={
                     key:SRC_MAP.FRIEND+'-'+this.friendId,
                     content:this.chatContent,
-                    time:new Date().getTime(),
+                    time:curTime,
                     isSelf:1
                 }
                 
@@ -92,13 +98,15 @@
                     src_type:SRC_MAP.FRIEND,
                     cnt_type:CNT_MAP.TEXT,
                     content:this.chatContent,
-                    target_id:this.friendId
+                    target_id:this.friendId,
+                    time:curTime
                 }
                 this.$store.state.socket.send(JSON.stringify(data))
                 this.chatContent = ''
+               
                 this.$nextTick(() => {
                     this.$refs.list.scrollTop = this.$refs.list.scrollHeight
-                    this.$refs.msg.focus();
+                    this.$refs.msg.focus()
                 })
                 
             },
