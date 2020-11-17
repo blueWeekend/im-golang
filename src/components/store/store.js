@@ -13,7 +13,6 @@ const store = new Vuex.Store({
         friendList:{},
         socket:null,
         waitAckMsgList:[],
-        ackMsgListTimer:null
     },
     mutations: {
         finishInit(state){
@@ -29,7 +28,8 @@ const store = new Vuex.Store({
                 if(!payload['content']){
                     return
                 }
-                if(payload['isSelf']===0){
+                state.waitAckMsgList.push(payload)
+                if(payload['isSelf']!=1){
                     //确保消息不重
                     let left=0
                     let right=state.latelyMsgList[key].length-1
@@ -61,19 +61,26 @@ const store = new Vuex.Store({
 
             }else{
                 state.latelyMsgIndex.unshift(key)
-                Vue.set(state.latelyMsgList, key, payload['content']?[{status:MSG_STATUS_MAP.SENDING,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']}]:[])
+                if(payload['content']){
+                    state.waitAckMsgList.push(payload)
+                    Vue.set(state.latelyMsgList, key, [{status:MSG_STATUS_MAP.SENDING,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']}])
+                }else{
+                    Vue.set(state.latelyMsgList, key,[])
+                }
+                
             }
            
         },
-        confirmMsgArrive(state, payload){
-            let key=payload['src_type']+'-'+payload['user_id']
+        confirmMsgStatus(state, payload){
+            //let key=payload['src_type']+'-'+payload['user_id']
+            let key=payload['src_type']+'-'+(payload['isSelf']===1?payload['target_id']:payload['user_id'])
             let left=0
             let right=state.latelyMsgList[key].length-1
             let mid
             while(left<=right){
                 mid=left+((right-left)>>1)
                 if(state.latelyMsgList[key][mid]['time']==payload['time']){
-                    state.latelyMsgList[key][mid]['status']=MSG_STATUS_MAP.SUCCESS
+                    state.latelyMsgList[key][mid]['status']=payload['status']
                     return
                 }else if(state.latelyMsgList[key][mid]['time']<payload['time']){
                     left=mid+1

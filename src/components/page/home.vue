@@ -15,7 +15,7 @@
 <script>
     import bottom from '@/components/common/bottom'
     import {getUserInfo,getWsConnect} from '@/api/user'
-    import {getToken,logout,EVENT_MAP,SRC_MAP,NOT_KEEP_ALIVE_ROUTE} from '@/utils/global'
+    import {getToken,logout,EVENT_MAP,SRC_MAP,NOT_KEEP_ALIVE_ROUTE,MSG_STATUS_MAP} from '@/utils/global'
     import communicate from '@/utils/communicate'
     export default {
         data() {
@@ -26,7 +26,9 @@
                 token:'',
                 isConnecting:false,
                 waitAckMsgList:[],
-                ackMsgListTimer:null
+                ackMsgListTimer:null,
+                heartTimer:null,
+                reConnectTimer:null
             }
         },
         created() {
@@ -38,10 +40,12 @@
             if(!this.token){
                 return
             }
-            communicate.$on('pushMsg', (data) => {
-                console.log(data)
+            communicate.$on('pushWaitAckMsg', (data) => {
                 this.waitAckMsgList.push(data)
-                this.ackMsgListTimer=setInterval(this.filterWaitAckMsgList(), 3000);
+                if(this.ackMsgListTimer){
+                    return
+                }
+                this.ackMsgListTimer=setTimeout(this.filterWaitAckMsgList, 3000)
             })
             getUserInfo().then(data=>{
                 this.init(data)
@@ -58,17 +62,29 @@
                 console.log(this.waitAckMsgList)
                 if(this.waitAckMsgList.length==0){
                     clearInterval(this.ackMsgListTimer)
+                    this.ackMsgListTimer=null
+                    return
                 }
                 let curTime=new Date().getTime()
                 for(let i in this.waitAckMsgList){
                     if(curTime-this.waitAckMsgList[i]['time']>15000){
                         //剔除掉15秒内没重发成功的消息
+                        let msg={
+                            user_id:this.waitAckMsgList[i]['user_id'],
+                            src_type:this.waitAckMsgList[i]['src_type'],
+                            target_id:this.waitAckMsgList[i]['target_id'],
+                            time:this.waitAckMsgList[i]['time'],
+                            isSelf:1,
+                            status:MSG_STATUS_MAP.FAIL
+                        }
+                        this.$store.commit('confirmMsgStatus',msg)
                         this.waitAckMsgList.splice(i,1)
                     }
-                    if(this.waitAckMsgList[i]){
-                        this.$store.state.socket.send(JSON.stringify(data))
+                    if(this.waitAckMsgList[i]){//splice删除后可能不存在
+                        this.$store.state.socket.send(JSON.stringify(this.waitAckMsgList[i]))
                     }
                 }
+                setTimeout(this.filterWaitAckMsgList, 3000)
             },
             remWaitAckMsgList(time){
                 let left=0
@@ -97,14 +113,7 @@
                 let msg
                 switch(data.event){
                     case EVENT_MAP.MSG:
-                        // msg={
-                        //     key:data.src_type+'-'+data.user_id,
-                        //     content:data.content,
-                        //     time:data.time,
-                        //     isSelf:0
-                        // }
-                        data['isSelf']=0
-                        this.$store.commit('pushMsg',data)
+                        this.$store.commit('pushMsg',{...data,isSelf:0})
                         //ack确保消息必达
                         let ackMsg={
                             user_id:data.target_id,
@@ -120,8 +129,10 @@
                             user_id:data.user_id,
                             src_type:data.src_type,
                             time:data.time,
+                            isSelf:0,
+                            status:MSG_STATUS_MAP.SUCCESS
                         }
-                        this.$store.commit('confirmMsgArrive',msg)
+                        this.$store.commit('confirmMsgStatus',msg)
                         this.remWaitAckMsgList(data.time)
                         break
                     case EVENT_MAP.NOT_LOGIN:
@@ -140,18 +151,17 @@
                 this.reConnect()
             },
             heart(){
-                let that=this
-                this.timeObj && clearTimeout(this.timeObj)
-                this.serverTimeObj && clearTimeout(this.serverTimeObj)
-                this.timeObj = setTimeout(function(){
+                this.heartTimer && clearTimeout(this.heartTimer)
+                this.reConnectTimer && clearTimeout(this.reConnectTimer)
+                this.heartTimer = setTimeout(()=>{
                     let data={
                         event:EVENT_MAP.PING,
-                        user_id:that.$store.state.userInfo['user_id'],
+                        user_id:this.$store.state.userInfo['user_id'],
                     }
-                    that.$store.state.socket.send(JSON.stringify(data))
-                    that.serverTimeObj=setTimeout(function(){
-                        that.$store.state.socket.close()
-                        that.reConnect()
+                    this.$store.state.socket.send(JSON.stringify(data))
+                    this.reConnectTimer=setTimeout(()=>{
+                        this.$store.state.socket.close()
+                        this.reConnect()
                     },3000)
                 },60000)
             },

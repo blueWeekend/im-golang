@@ -23,7 +23,8 @@
                         <time class="posted-date">{{ formatTime(data.time) }}</time>
                     </div>
                 </div>
-                <cube-loading v-if="data.isSelf==1 && data.status==MSG_STATUS_MAP.SENDING" :size="28" style="padding-top:8px"></cube-loading>
+                <cube-loading v-if="data.status==MSG_STATUS_MAP.SENDING && data.isSelf==1" :size="28" style="padding-top:8px"></cube-loading>
+                <i v-if="data.status==MSG_STATUS_MAP.FAIL && data.isSelf==1" style="font-size:28px;padding-top:8px" class="cubeic-warn"></i>
             </div>  
         </div>
 
@@ -84,12 +85,6 @@
             sendMsg() {
                 //毫秒时间戳
                 let curTime=new Date().getTime()
-                // let msg={
-                //     key:SRC_MAP.FRIEND+'-'+this.friendId,
-                //     content:this.chatContent,
-                //     time:curTime,
-                //     isSelf:1
-                // }
                 let msg={
                     event:EVENT_MAP.MSG,
                     user_id:this.$store.state.userInfo['user_id'],
@@ -101,16 +96,8 @@
                     isSelf:1
                 }
                 this.$store.commit('pushMsg',msg)
-                // let data={
-                //     event:EVENT_MAP.MSG,
-                //     user_id:this.$store.state.userInfo['user_id'],
-                //     src_type:SRC_MAP.FRIEND,
-                //     cnt_type:CNT_MAP.TEXT,
-                //     content:this.chatContent,
-                //     target_id:this.friendId,
-                //     time:curTime
-                // }
                 delete msg.isSelf
+                communicate.$emit('pushWaitAckMsg',msg)
                 this.$store.state.socket.send(JSON.stringify(msg))
                 this.chatContent = ''
                
