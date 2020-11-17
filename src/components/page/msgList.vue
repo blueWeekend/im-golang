@@ -48,8 +48,10 @@
             onItemClick(typeAndFriendkey) {
                 let arr=typeAndFriendkey.split('-')
                 let msg={
-                    key:typeAndFriendkey,
+                    src_type:arr[0],
+                    target_id  :arr[1],
                     content:'',
+                    isSelf:1
                 }
                 this.$store.commit('pushMsg',msg)
                 this.$router.push('/home/friendList/dialog/'+arr[1]+'/'+SRC_MAP.FRIEND)
