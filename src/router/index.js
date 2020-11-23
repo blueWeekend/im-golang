@@ -22,12 +22,12 @@ const router=new Router({
         {
           path: '/home/friendList',
           component: () => import('@/components/page/friendList.vue'),
-          meta:2,
+          meta:{isShowBottom:true},
         },
         {
           path: '/home/msgList',
           component: () => import('@/components/page/msgList.vue'),
-          meta:2,
+          meta:{isShowBottom:true},
         },
         {
           path: '/home/login',
@@ -52,12 +52,13 @@ router.beforeEach((to, from, next) => {
     })
     return
   }
-  if(to.path=='/home/msgList' || to.path=='/home/friendList'){
-      store.commit('setShowBottomFlag', true)
+  let routeArr=to.path.split('/').filter(str=>{return !!str})
+  if(to.meta.isShowBottom===true){
+    store.commit('setShowBottomFlag', true)
   }else{
       store.commit('setShowBottomFlag', false)
   }
-  let bottomLabel=to.path.split('/')[2]
+  let bottomLabel=routeArr[1]
   store.commit('setBottomLabel',bottomLabel)
   next() 
 })
