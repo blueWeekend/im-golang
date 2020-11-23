@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/components/store/store'
+import {getToken} from '@/utils/global'
 Vue.use(Router)
 const loginPath='/home/login'
 const router=new Router({
@@ -41,8 +42,8 @@ const router=new Router({
 router.beforeEach((to, from, next) => {
   // console.log(to.path)
   const nextRoute = [loginPath] // 白名单页面
-  let access_token = localStorage.getItem("im:access_token")
-  // 未登录状态；当路由到 nextRoute 指定页时，跳转至 UserLogIn
+  let access_token = getToken()
+  
   if (nextRoute.indexOf(to.path) < 0 && !access_token) { // 检测是否登录的页面
     next({
       path: loginPath,
