@@ -15,7 +15,7 @@
         </cube-recycle-list> -->
         <header><i class="cubeic-back" @click="back()"></i>&nbsp;&nbsp;&nbsp;{{nickname}}</header>
         <div class="list" ref="list">  
-            <div v-for="(data,index) in $store.state.latelyMsgList[msgKey]" :key="index" :class="dialogClass[data.isSelf]" @click="handleClick(data)">
+            <div v-for="(data,index) in $store.state.latelyMsgList[msgKey]" :key="index" :class="dialogClass[data.is_self]" @click="handleClick(data)">
                 <div class="avatar" :style="{backgroundImage: 'url(' + avatar + ')'}"></div>
                 <div class="bubble">
                     <p>{{ data.content }}</p>
@@ -23,8 +23,8 @@
                         <time class="posted-date">{{ formatTime(data.time) }}</time>
                     </div>
                 </div>
-                <cube-loading v-if="data.status==MSG_STATUS_MAP.SENDING && data.isSelf==1" :size="28" style="padding-top:8px"></cube-loading>
-                <i v-if="data.status==MSG_STATUS_MAP.FAIL && data.isSelf==1" style="font-size:28px;padding-top:8px" class="cubeic-warn"></i>
+                <cube-loading v-if="data.status==MSG_STATUS_MAP.SENDING && data.is_self==1" :size="28" style="padding-top:8px"></cube-loading>
+                <i v-if="data.status==MSG_STATUS_MAP.FAIL && data.is_self==1" style="font-size:28px;padding-top:8px" class="cubeic-warn"></i>
             </div>  
         </div>
 
@@ -93,10 +93,10 @@
                     content:this.chatContent,
                     target_id:this.friendId,
                     time:curTime,
-                    isSelf:1
+                    is_self:1
                 }
                 this.$store.commit('pushMsg',msg)
-                delete msg.isSelf
+                delete msg.is_self
                 communicate.$emit('pushWaitAckMsg',msg)
                 this.$store.state.socket.send(JSON.stringify(msg))
                 this.chatContent = ''

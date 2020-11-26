@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {MSG_STATUS_MAP} from '@/utils/global'
+import {addMsg} from '@/components/store/indexedDb'
 Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
@@ -12,7 +13,7 @@ const store = new Vuex.Store({
         bottomLabel:'msgList',
         friendList:{},
         socket:null,
-        waitAckMsgList:[],
+     
     },
     mutations: {
         finishInit(state){
@@ -23,13 +24,12 @@ const store = new Vuex.Store({
         },
         pushMsg(state, payload) {
             console.log(state)
-            let key=payload['src_type']+'-'+(payload['isSelf']===1?payload['target_id']:payload['user_id'])
+            let key=payload['src_type']+'-'+(payload['is_self']===1?payload['target_id']:payload['user_id'])
             if(state.latelyMsgList[key]){
                 if(!payload['content']){
                     return
                 }
-                state.waitAckMsgList.push(payload)
-                if(payload['isSelf']!=1){
+                if(payload['is_self']!=1){
                     //确保消息不重
                     let left=0
                     let right=state.latelyMsgList[key].length-1
@@ -45,8 +45,14 @@ const store = new Vuex.Store({
                         }
                     }
                 }
-                
-                state.latelyMsgList[key].push({status:MSG_STATUS_MAP.SENDING,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']})
+                let msg={
+                    status:MSG_STATUS_MAP.SENDING,
+                    content:payload['content'],
+                    time:payload['time'],
+                    is_self:payload['is_self']
+                }
+                addMsg({...payload,status:MSG_STATUS_MAP.SENDING})
+                state.latelyMsgList[key].push(msg)
                 // state.latelyMsgIndex.splice(i,1)
                 // state.latelyMsgIndex.unshift(key)
                 for(let i in state.latelyMsgIndex){
@@ -62,8 +68,14 @@ const store = new Vuex.Store({
             }else{
                 state.latelyMsgIndex.unshift(key)
                 if(payload['content']){
-                    state.waitAckMsgList.push(payload)
-                    Vue.set(state.latelyMsgList, key, [{status:MSG_STATUS_MAP.SENDING,content:payload['content'],time:payload['time'],isSelf:payload['isSelf']}])
+                    let msg={
+                        status:MSG_STATUS_MAP.SENDING,
+                        content:payload['content'],
+                        time:payload['time'],
+                        is_self:payload['is_self']
+                    }
+                    addMsg({...payload,status:MSG_STATUS_MAP.SENDING})
+                    Vue.set(state.latelyMsgList, key, [msg])
                 }else{
                     Vue.set(state.latelyMsgList, key,[])
                 }
@@ -73,7 +85,7 @@ const store = new Vuex.Store({
         },
         confirmMsgStatus(state, payload){
             //let key=payload['src_type']+'-'+payload['user_id']
-            let key=payload['src_type']+'-'+(payload['isSelf']===1?payload['target_id']:payload['user_id'])
+            let key=payload['src_type']+'-'+(payload['is_self']===1?payload['target_id']:payload['user_id'])
             let left=0
             let right=state.latelyMsgList[key].length-1
             let mid

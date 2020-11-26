@@ -16,6 +16,7 @@
     import bottom from '@/components/common/bottom'
     import {getUserInfo,getWsConnect} from '@/api/user'
     import {getToken,logout,EVENT_MAP,SRC_MAP,NOT_KEEP_ALIVE_ROUTE,MSG_STATUS_MAP} from '@/utils/global'
+    import {confirmMsgStatus} from '@/components/store/indexedDb'
     import communicate from '@/utils/communicate'
     export default {
         data() {
@@ -74,10 +75,11 @@
                             src_type:this.waitAckMsgList[i]['src_type'],
                             target_id:this.waitAckMsgList[i]['target_id'],
                             time:this.waitAckMsgList[i]['time'],
-                            isSelf:1,
+                            is_self:1,
                             status:MSG_STATUS_MAP.FAIL
                         }
                         this.$store.commit('confirmMsgStatus',msg)
+                        confirmMsgStatus(msg.time,MSG_STATUS_MAP.FAIL)
                         this.waitAckMsgList.splice(i,1)
                     }
                     if(this.waitAckMsgList[i]){//splice删除后可能不存在
@@ -113,7 +115,7 @@
                 let msg
                 switch(data.event){
                     case EVENT_MAP.MSG:
-                        this.$store.commit('pushMsg',{...data,isSelf:0})
+                        this.$store.commit('pushMsg',{...data,is_self:0})
                         //ack确保消息必达
                         let ackMsg={
                             user_id:data.target_id,
@@ -129,10 +131,11 @@
                             user_id:data.user_id,
                             src_type:data.src_type,
                             time:data.time,
-                            isSelf:0,
+                            is_self:0,
                             status:MSG_STATUS_MAP.SUCCESS
                         }
                         this.$store.commit('confirmMsgStatus',msg)
+                        confirmMsgStatus(msg.time,MSG_STATUS_MAP.SUCCESS)
                         this.remWaitAckMsgList(data.time)
                         break
                     case EVENT_MAP.NOT_LOGIN:

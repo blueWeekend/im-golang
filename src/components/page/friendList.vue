@@ -44,7 +44,7 @@
                     src_type:SRC_MAP.FRIEND,
                     target_id  :item.value,
                     content:'',
-                    isSelf:1
+                    is_self:1
                 }
                 this.$store.commit('pushMsg',msg)
                 this.$router.push('/home/friendList/dialog/'+item.value+'/'+SRC_MAP.FRIEND)
