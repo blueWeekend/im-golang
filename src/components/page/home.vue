@@ -33,6 +33,9 @@
             }
         },
         created() {
+            window.onbeforeunload=()=>{
+                localStorage.tt=Math.random()
+            }
             let route=this.$route.path
             if(route.split('/').pop()=='home'){
                 this.$router.push('/home/msgList')
