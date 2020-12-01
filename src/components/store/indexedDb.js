@@ -33,10 +33,37 @@ export function confirmMsgStatus(time, status) {
     }
 }
 export function saveLatelyDialog(){
+    if (!db) return
     let list=[]
-    for(let i in store.state.latelyMsgIndex){
-        list[i]=store.state.latelyMsgList[i]
+    for(let item of store.state.latelyMsgIndex){
+        let content=''
+        let time=0
+        if(store.state.latelyMsgList[item].length>0){
+            content=store.state.latelyMsgList[item][store.state.latelyMsgList[item].length-1]['content']
+            time=store.state.latelyMsgList[item][store.state.latelyMsgList[item].length-1]['time']
+        }
+        list.push({
+            key:item,
+            last_msg_content:content,
+            last_msg_time:time
+        })
     }
+    if(list.length==0){
+        return
+    }
+    let objectStore = db.transaction(["lately_dialog"], "readwrite").objectStore('lately_dialog')
+    objectStore.put(list,1)
+}
+export function setLatelyDialog(){
+    let transaction = db.transaction(["lately_dialog"]);
+    let objectStore = transaction.objectStore("lately_dialog");
+    let request = objectStore.get(1);
+    request.onsuccess = function(event) {
+        if(event.target.result instanceof Array && event.target.result.length>0){
+            store.commit('setLatelyDialog',event.target.result)
+        }
+        
+    };
 }
 function init() {
     let request = db.open("im")
@@ -55,7 +82,7 @@ function init() {
             console.log(objectStore)
         }                                
         if (!db.objectStoreNames.contains('lately_dialog')) {
-            let objectStore = db.createObjectStore('lately_dialog', { autoIncrement: true })
+            let objectStore = db.createObjectStore('lately_dialog',{autoIncrement: true})
         }
 
     }

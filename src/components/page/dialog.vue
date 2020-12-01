@@ -40,7 +40,7 @@
 </template>
 
 <script>
-    import {EVENT_MAP,SRC_MAP,CNT_MAP,MSG_STATUS_MAP} from '@/utils/global'
+    import {EVENT_MAP,SRC_MAP,CNT_MAP,MSG_STATUS_MAP,formatTime} from '@/utils/global'
     import communicate from '@/utils/communicate'
     export default {
         name: "im-dialog",
@@ -76,7 +76,7 @@
                    
                     msg: id,
                     class:'item-left',
-                    time: this.formatTime()
+                    time: formatTime()
                 }
             },
             handleClick(data) {
@@ -100,7 +100,6 @@
                 communicate.$emit('pushWaitAckMsg',msg)
                 this.$store.state.socket.send(JSON.stringify(msg))
                 this.chatContent = ''
-               
                 this.$nextTick(() => {
                     this.$refs.list.scrollTop = this.$refs.list.scrollHeight
                     this.$refs.msg.focus()
@@ -110,22 +109,7 @@
             back(){
                 this.$router.go(-1)
             },
-            formatTime (value) {
-                value = value ? value : new Date().getTime()
-                let date = new Date(value);
-                let y = date.getFullYear();
-                let MM = date.getMonth() + 1;
-                MM = MM < 10 ? "0" + MM : MM;
-                let d = date.getDate();
-                d = d < 10 ? "0" + d : d;
-                let h = date.getHours();
-                h = h < 10 ? "0" + h : h;
-                let m = date.getMinutes();
-                m = m < 10 ? "0" + m : m;
-                let s = date.getSeconds();
-                s = s < 10 ? "0" + s : s;
-                return y + "-" + MM + "-" + d + " " + h + ":" + m;
-            }
+            formatTime,
         },
         watch:{
             "$store.state.isInit":function(val){

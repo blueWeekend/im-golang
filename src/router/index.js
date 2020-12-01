@@ -54,13 +54,14 @@ router.beforeEach((to, from, next) => {
     return
   }
   let routeArr=to.path.split('/').filter(str=>{return !!str})
-  if(to.meta.isShowBottom===true){
-    store.commit('setShowBottomFlag', true)
-  }else{
-      store.commit('setShowBottomFlag', false)
-  }
+  store.commit('setShowBottomFlag', to.meta.isShowBottom===true?true:false)
   let bottomLabel=routeArr[1]
   store.commit('setBottomLabel',bottomLabel)
+  if(routeArr[routeArr.length-1]=='home'){
+    next({
+      path: '/home/msgList'
+    })
+  }
   next() 
 })
 export default router

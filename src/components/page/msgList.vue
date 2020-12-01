@@ -9,7 +9,15 @@
                         </div>
                         <div class="text">
                             <h2 class="target-name" v-html="friendIdnicknameMap[index]"></h2>
-                            <h3 class="last-msg">{{$store.state.latelyMsgList[data].length>0?$store.state.latelyMsgList[data][$store.state.latelyMsgList[data].length-1]['content']:''}}</h3>
+                            <template v-if="$store.state.latelyMsgList[data].length>0">
+                                <h3 class="last-msg">{{$store.state.latelyMsgList[data][$store.state.latelyMsgList[data].length-1]['content']}}</h3>
+                                <h3 class="last-msg-time">{{formatTime($store.state.latelyMsgList[data][$store.state.latelyMsgList[data].length-1]['time'])}}</h3>
+                            </template>
+                            <template v-else>
+                                <h3 class="last-msg"></h3>
+                                <h3 class="last-msg-time"></h3>
+                            </template>
+                            
                         </div>
                     </div>
                 </li>
@@ -19,7 +27,7 @@
 </template>
 
 <script>
-    import {SRC_MAP} from '@/utils/global'
+    import {SRC_MAP,formatTime} from '@/utils/global'
     export default {
         name:'im-msgList',
         data() {
@@ -56,6 +64,7 @@
                 this.$store.commit('pushMsg',msg)
                 this.$router.push('/home/friendList/dialog/'+arr[1]+'/'+SRC_MAP.FRIEND)
             },
+            formatTime,
         },
         computed: {
             friendIdnicknameMap() {
@@ -100,4 +109,9 @@
           .last-msg
             font-size:14px
             color:#999
+          .last-msg-time
+            font-size:14px
+            color:#999
+            position: absolute
+            right: 3px
 </style>

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {MSG_STATUS_MAP} from '@/utils/global'
-import {addMsg} from '@/components/store/indexedDb'
+import {addMsg,confirmMsgStatus} from '@/components/store/indexedDb'
 Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
@@ -85,6 +85,7 @@ const store = new Vuex.Store({
         },
         confirmMsgStatus(state, payload){
             //let key=payload['src_type']+'-'+payload['user_id']
+            confirmMsgStatus(payload.time,payload['status'])
             let key=payload['src_type']+'-'+(payload['is_self']===1?payload['target_id']:payload['user_id'])
             let left=0
             let right=state.latelyMsgList[key].length-1
@@ -100,6 +101,9 @@ const store = new Vuex.Store({
                     right=mid-1
                 }
             }
+        },
+        setLatelyDialog(){
+            
         },
         setShowBottomFlag(state, flag) {
             state.isShowBottom = flag
