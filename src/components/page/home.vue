@@ -58,7 +58,6 @@
                 this.setSocket()
                 this.$store.commit('setUserInfo',data.user_info)
                 this.$store.commit('setFriendList',data.friend_list)
-                //this.$store.commit('setLatelyDialog',data.friend_list)
                 setLatelyDialog()
                 this.$store.commit('finishInit')
             },

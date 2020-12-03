@@ -102,8 +102,16 @@ const store = new Vuex.Store({
                 }
             }
         },
-        setLatelyDialog(){
-            
+        setLatelyDialog(state,payload){
+            console.log(payload)
+            for(let item of payload){
+                if(state.latelyMsgList.type_target_id){
+                    continue
+                }
+                state.latelyMsgIndex.push(item['type_target_id'])
+                delete item.key
+                Vue.set(state.latelyMsgList, item['type_target_id'], item.content?[item]:[])
+            }
         },
         setShowBottomFlag(state, flag) {
             state.isShowBottom = flag

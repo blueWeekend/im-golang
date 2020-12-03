@@ -36,16 +36,14 @@ export function saveLatelyDialog(){
     if (!db) return
     let list=[]
     for(let item of store.state.latelyMsgIndex){
-        let content=''
-        let time=0
-        if(store.state.latelyMsgList[item].length>0){
-            content=store.state.latelyMsgList[item][store.state.latelyMsgList[item].length-1]['content']
-            time=store.state.latelyMsgList[item][store.state.latelyMsgList[item].length-1]['time']
+        let data={}
+        let len=store.state.latelyMsgList[item].length
+        if(len>0){
+            data=store.state.latelyMsgList[item][len-1]
         }
         list.push({
-            key:item,
-            last_msg_content:content,
-            last_msg_time:time
+            type_target_id:item,
+            ...data
         })
     }
     if(list.length==0){
@@ -55,10 +53,11 @@ export function saveLatelyDialog(){
     objectStore.put(list,1)
 }
 export function setLatelyDialog(){
-    let transaction = db.transaction(["lately_dialog"]);
-    let objectStore = transaction.objectStore("lately_dialog");
-    let request = objectStore.get(1);
+    let transaction = db.transaction(["lately_dialog"],"readwrite")
+    let objectStore = transaction.objectStore("lately_dialog")
+    let request = objectStore.get(1)
     request.onsuccess = function(event) {
+        console.log(event.target.result)
         if(event.target.result instanceof Array && event.target.result.length>0){
             store.commit('setLatelyDialog',event.target.result)
         }
