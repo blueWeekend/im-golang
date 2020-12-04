@@ -45,7 +45,7 @@ Service.interceptors.response.use(response => {
   const toast = Toast.$create({
     time: 1000,
     type:'error',
-    txt: msg
+    txt:'网络错误'+ msg
   })
   toast.show()
   return Promise.reject(error)

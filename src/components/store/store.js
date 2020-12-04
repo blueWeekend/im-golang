@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {MSG_STATUS_MAP} from '@/utils/global'
-import {addMsg,confirmMsgStatus} from '@/components/store/indexedDb'
+import {addMsg,confirmMsgStatus,setPrivateMsgList} from '@/components/store/indexedDb'
 Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
@@ -13,7 +13,7 @@ const store = new Vuex.Store({
         bottomLabel:'msgList',
         friendList:{},
         socket:null,
-     
+        NewMsgNumMap:{}
     },
     mutations: {
         finishInit(state){
@@ -111,6 +111,11 @@ const store = new Vuex.Store({
                 state.latelyMsgIndex.push(item['type_target_id'])
                 delete item.key
                 Vue.set(state.latelyMsgList, item['type_target_id'], item.content?[item]:[])
+            }
+        },
+        setPrivateMsgList(state,payload){
+            if(state.NewMsgNumMap.hasOwnProperty(payload['type']+'-'+payload['target_id'])){
+                //todo getMsgList
             }
         },
         setShowBottomFlag(state, flag) {

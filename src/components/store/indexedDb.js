@@ -52,12 +52,14 @@ export function saveLatelyDialog(){
     let objectStore = db.transaction(["lately_dialog"], "readwrite").objectStore('lately_dialog')
     objectStore.put(list,1)
 }
+export function setPrivateMsgList(){
+    
+}
 export function setLatelyDialog(){
     let transaction = db.transaction(["lately_dialog"],"readwrite")
     let objectStore = transaction.objectStore("lately_dialog")
     let request = objectStore.get(1)
     request.onsuccess = function(event) {
-        console.log(event.target.result)
         if(event.target.result instanceof Array && event.target.result.length>0){
             store.commit('setLatelyDialog',event.target.result)
         }
@@ -74,8 +76,8 @@ function init() {
         db = event.target.result
         if (!db.objectStoreNames.contains('private_msg')) {
             let objectStore = db.createObjectStore('private_msg', { autoIncrement: true,keyPath: "id" })
-            objectStore.createIndex('user_id', 'user_id', { unique: false })
-            objectStore.createIndex('target_id', 'target_id', { unique: false })
+            // objectStore.createIndex('user_id', 'user_id', { unique: false })
+            // objectStore.createIndex('target_id', 'target_id', { unique: false })
             objectStore.createIndex('time', 'time', { unique: false })
             objectStore.createIndex('dialog_key', 'dialog_key', { unique: false })
             console.log(objectStore)
