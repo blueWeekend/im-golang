@@ -53,8 +53,8 @@
            
         },
         methods: {
-            onItemClick(typeAndFriendkey) {
-                let arr=typeAndFriendkey.split('-')
+            onItemClick(typeAndTargetId) {
+                let arr=typeAndTargetId.split('-')
                 let msg={
                     src_type:arr[0],
                     target_id  :arr[1],

@@ -62,7 +62,6 @@
                 this.$store.commit('finishInit')
             },
             filterWaitAckMsgList(){
-                console.log(this.waitAckMsgList)
                 if(this.waitAckMsgList.length==0){
                     clearInterval(this.ackMsgListTimer)
                     this.ackMsgListTimer=null

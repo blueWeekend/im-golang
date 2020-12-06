@@ -42,6 +42,7 @@
 <script>
     import {EVENT_MAP,SRC_MAP,CNT_MAP,MSG_STATUS_MAP,formatTime} from '@/utils/global'
     import communicate from '@/utils/communicate'
+    import {setPrivateMsgList} from '@/components/store/indexedDb'
     export default {
         name: "im-dialog",
         data() {
@@ -70,6 +71,7 @@
         methods: {
             init(){
                 this.nickname=this.$store.state.friendList[this.friendId]['nickname']
+                setPrivateMsgList(this.srcType,this.friendId)
             },
             getItem(id) {
                 return {

@@ -14,8 +14,8 @@ export function addMsg(data) {
 export function confirmMsgStatus(time, status) {
     if (!db) return
     let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
-    var index = objectStore.index("time")
-    //发消息毫秒时间戳唯一  time,is_self
+    let index = objectStore.index("time")
+    //同一用户发消息毫秒时间戳唯一  time,is_self
     index.openCursor(IDBKeyRange.only(time)).onsuccess = function (event) {
         let cursor = event.target.result
         if(cursor){
@@ -52,10 +52,33 @@ export function saveLatelyDialog(){
     let objectStore = db.transaction(["lately_dialog"], "readwrite").objectStore('lately_dialog')
     objectStore.put(list,1)
 }
-export function setPrivateMsgList(){
-    
+export function setPrivateMsgList(type,targetId,limit=20,start=0){
+    if (!db) return
+    let dialogKey=store.state.userInfo['user_id']<targetId?store.state.userInfo['user_id']+'-'+targetId:targetId+'-'+store.state.userInfo['user_id']
+    let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
+    let index = objectStore.index("dialog_key")
+    let i=0
+    let data=[]
+    index.openCursor(IDBKeyRange.only(dialogKey),'prev').onsuccess = function (event) {
+        let cursor = event.target.result
+        if(i==limit || !cursor){
+            data.reverse()
+            if(start==0){
+                data.splice(data.length-1,1)
+            }
+            store.commit('setPrivateMsgList',{msg_list:data,type:type,target_id:targetId})
+            return
+        }
+        if(i==0 && start>0){
+            cursor.continue(start)
+        }
+        data.push(cursor.value)
+        i++
+        cursor.continue()
+    }
 }
 export function setLatelyDialog(){
+    if (!db) return
     let transaction = db.transaction(["lately_dialog"],"readwrite")
     let objectStore = transaction.objectStore("lately_dialog")
     let request = objectStore.get(1)
