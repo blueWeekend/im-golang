@@ -54,6 +54,9 @@ export function saveLatelyDialog(){
 }
 export function setPrivateMsgList(type,targetId,limit=20,start=0){
     if (!db) return
+    // if(state.NewMsgNumMap.hasOwnProperty(payload['type']+'-'+payload['target_id'])){
+    //     todo getMsgList
+    // }
     let dialogKey=store.state.userInfo['user_id']<targetId?store.state.userInfo['user_id']+'-'+targetId:targetId+'-'+store.state.userInfo['user_id']
     let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
     let index = objectStore.index("dialog_key")

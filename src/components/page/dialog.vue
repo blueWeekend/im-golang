@@ -54,6 +54,7 @@
                 srcType:'',
                 msgKey:'',
                 nickname:'',
+                page:1,
                 avatar: require('./avatar.png'),
                 dialogClass:['item-left','item-right'],
                 MSG_STATUS_MAP:MSG_STATUS_MAP
@@ -71,7 +72,11 @@
         methods: {
             init(){
                 this.nickname=this.$store.state.friendList[this.friendId]['nickname']
-                setPrivateMsgList(this.srcType,this.friendId)
+                if(!this.$store.state.isInitPrivateMsgMap.hasOwnProperty(this.msgKey)){
+                    setPrivateMsgList(this.srcType,this.friendId)
+                    this.$store.commit('finishPrivateMsgInit',this.msgKey)
+                }
+                
             },
             getItem(id) {
                 return {

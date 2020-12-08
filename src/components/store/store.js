@@ -13,11 +13,15 @@ const store = new Vuex.Store({
         bottomLabel:'msgList',
         friendList:{},
         socket:null,
-        NewMsgNumMap:{}
+        NewMsgNumMap:{},
+        isInitPrivateMsgMap:{}
     },
     mutations: {
         finishInit(state){
             state.isInit=true
+        },
+        finishPrivateMsgInit(state,payload){
+            state.isInitPrivateMsgMap[payload]=true
         },
         setSocket(state,payload){
             state.socket=payload
@@ -113,21 +117,17 @@ const store = new Vuex.Store({
             }
         },
         setPrivateMsgList(state,payload){
-            if(state.NewMsgNumMap.hasOwnProperty(payload['type']+'-'+payload['target_id'])){
-                //todo getMsgList
-            }
-            console.log(payload)
             let key=payload['type']+'-'+payload['target_id']
             payload['msg_list'].push(...state.latelyMsgList[key])
             state.latelyMsgList[key]=payload['msg_list']
             console.log(state.latelyMsgList[key])
             
         },
-        setShowBottomFlag(state, flag) {
-            state.isShowBottom = flag
+        setShowBottomFlag(state, payload) {
+            state.isShowBottom = payload
         },
-        setBottomLabel(state, label) {
-            state.bottomLabel = label
+        setBottomLabel(state, payload) {
+            state.bottomLabel = payload
         },
         setUserInfo(state,payload){
             state.userInfo=payload
