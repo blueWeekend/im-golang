@@ -72,6 +72,14 @@
         methods: {
             init(){
                 this.nickname=this.$store.state.friendList[this.friendId]['nickname']
+                //vue双向绑定需初始化
+                let msg={
+                    src_type:this.srcType,
+                    target_id  :this.friendId,
+                    content:'',
+                    is_self:1
+                }
+                this.$store.commit('pushMsg',msg)
                 if(!this.$store.state.isInitPrivateMsgMap.hasOwnProperty(this.msgKey)){
                     setPrivateMsgList(this.srcType,this.friendId)
                     this.$store.commit('finishPrivateMsgInit',this.msgKey)

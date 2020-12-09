@@ -55,13 +55,7 @@
         methods: {
             onItemClick(typeAndTargetId) {
                 let arr=typeAndTargetId.split('-')
-                let msg={
-                    src_type:arr[0],
-                    target_id  :arr[1],
-                    content:'',
-                    is_self:1
-                }
-                this.$store.commit('pushMsg',msg)
+                
                 this.$router.push('/home/friendList/dialog/'+arr[1]+'/'+SRC_MAP.FRIEND)
             },
             formatTime,

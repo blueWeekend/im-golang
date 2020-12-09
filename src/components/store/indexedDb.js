@@ -1,8 +1,5 @@
 import store from '@/components/store/store'
 let db = indexedDB || webkitIndexedDB || mozIndexedDB || null
-if (db) {
-    init()
-}
 export function addMsg(data) {
     if (!db) return
     let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
@@ -66,7 +63,7 @@ export function setPrivateMsgList(type,targetId,limit=20,start=0){
         let cursor = event.target.result
         if(i==limit || !cursor){
             data.reverse()
-            if(start==0){
+            if(start==0 && data.length>0){
                 data.splice(data.length-1,1)
             }
             store.commit('setPrivateMsgList',{msg_list:data,type:type,target_id:targetId})
@@ -81,36 +78,56 @@ export function setPrivateMsgList(type,targetId,limit=20,start=0){
     }
 }
 export function setLatelyDialog(){
-    if (!db) return
-    let transaction = db.transaction(["lately_dialog"],"readwrite")
-    let objectStore = transaction.objectStore("lately_dialog")
-    let request = objectStore.get(1)
-    request.onsuccess = function(event) {
-        if(event.target.result instanceof Array && event.target.result.length>0){
-            store.commit('setLatelyDialog',event.target.result)
+    return new Promise((resolve, reject) => {
+        if(!db){
+            resolve('浏览器不支持indexeddb')
+            return
         }
-        
-    };
+        let transaction = db.transaction(["lately_dialog"],"readwrite")
+        let objectStore = transaction.objectStore("lately_dialog")
+        let request = objectStore.get(1)
+        request.onsuccess = (event)=>{
+            if(event.target.result instanceof Array && event.target.result.length>0){
+                store.commit('setLatelyDialog',event.target.result)
+            }
+            resolve()
+        }
+        request.onerror=(event)=>{
+            console.log(event)
+            reject(event)
+        }
+    })
+    
 }
-function init() {
-    let request = db.open("im")
-    request.onsuccess = function () {
-        db = request.result
-        console.log(db)
-    }
-    request.onupgradeneeded = function (event) {
-        db = event.target.result
-        if (!db.objectStoreNames.contains('private_msg')) {
-            let objectStore = db.createObjectStore('private_msg', { autoIncrement: true,keyPath: "id" })
-            // objectStore.createIndex('user_id', 'user_id', { unique: false })
-            // objectStore.createIndex('target_id', 'target_id', { unique: false })
-            objectStore.createIndex('time', 'time', { unique: false })
-            objectStore.createIndex('dialog_key', 'dialog_key', { unique: false })
-            console.log(objectStore)
-        }                                
-        if (!db.objectStoreNames.contains('lately_dialog')) {
-            let objectStore = db.createObjectStore('lately_dialog',{autoIncrement: true})
+export function init() {
+    return new Promise((resolve, reject) => {
+        if(!db){
+            resolve('浏览器不支持indexeddb')
+            return
         }
-
-    }
+        let request = db.open("im")
+        request.onsuccess = ()=> {
+            db = request.result
+            console.log(db)
+            resolve()
+        }
+        request.onerror = (event)=> {
+            console.log(event)
+            reject(event)
+        }
+        request.onupgradeneeded =  (event)=>{
+            db = event.target.result
+            if (!db.objectStoreNames.contains('private_msg')) {
+                let objectStore = db.createObjectStore('private_msg', { autoIncrement: true,keyPath: "id" })
+                // objectStore.createIndex('user_id', 'user_id', { unique: false })
+                // objectStore.createIndex('target_id', 'target_id', { unique: false })
+                objectStore.createIndex('time', 'time', { unique: false })
+                objectStore.createIndex('dialog_key', 'dialog_key', { unique: false })
+            }                                
+            if (!db.objectStoreNames.contains('lately_dialog')) {
+                let objectStore = db.createObjectStore('lately_dialog',{autoIncrement: true})
+            }
+        }
+    })
+    
 }

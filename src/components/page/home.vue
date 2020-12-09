@@ -16,7 +16,7 @@
     import bottom from '@/components/common/bottom'
     import {getUserInfo,getWsConnect} from '@/api/user'
     import {getToken,logout,EVENT_MAP,SRC_MAP,NOT_KEEP_ALIVE_ROUTE,MSG_STATUS_MAP} from '@/utils/global'
-    import {saveLatelyDialog,setLatelyDialog} from '@/components/store/indexedDb'
+    import {saveLatelyDialog,setLatelyDialog,init as localDbInit} from '@/components/store/indexedDb'
     import communicate from '@/utils/communicate'
     const RETRAY_RATE=3000
     const HEART_RATE=60000
@@ -54,12 +54,16 @@
             })
         },
         methods: {
-            init(data,token){
+             init(data){
                 this.setSocket()
                 this.$store.commit('setUserInfo',data.user_info)
                 this.$store.commit('setFriendList',data.friend_list)
-                setLatelyDialog()
-                this.$store.commit('finishInit')
+                localDbInit().then(()=>{
+                    setLatelyDialog().then(()=>{
+                        this.$store.commit('finishInit')
+                    })
+                })
+                
             },
             filterWaitAckMsgList(){
                 if(this.waitAckMsgList.length==0){
@@ -118,6 +122,7 @@
                         this.$store.commit('pushMsg',{...data,is_self:0})
                         //ack确保消息必达
                         let ackMsg={
+                            msgId:data.msg_id,
                             user_id:data.target_id,
                             src_type:data.src_type,
                             target_id:data.user_id,

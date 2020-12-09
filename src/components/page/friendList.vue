@@ -40,13 +40,6 @@
                 this.cityData[0].items=arr
             },
             selectItem(item) {
-                let msg={
-                    src_type:SRC_MAP.FRIEND,
-                    target_id  :item.value,
-                    content:'',
-                    is_self:1
-                }
-                this.$store.commit('pushMsg',msg)
                 this.$router.push('/home/friendList/dialog/'+item.value+'/'+SRC_MAP.FRIEND)
             },
             clickTitle(title) {

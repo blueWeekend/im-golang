@@ -120,7 +120,6 @@ const store = new Vuex.Store({
             let key=payload['type']+'-'+payload['target_id']
             payload['msg_list'].push(...state.latelyMsgList[key])
             state.latelyMsgList[key]=payload['msg_list']
-            console.log(state.latelyMsgList[key])
             
         },
         setShowBottomFlag(state, payload) {
