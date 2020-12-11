@@ -127,12 +127,13 @@
                         this.$store.commit('pushMsg',{...data,is_self:0})
                         //ack确保消息必达
                         let ackMsg={
-                            msgId:data.msg_id,
+                            msg_id:data.msg_id,
                             user_id:data.target_id,
                             src_type:data.src_type,
                             target_id:data.user_id,
                             event:EVENT_MAP.ACK,
-                            time:data.time
+                            time:data.time,
+                            created_at:data.created_at
                         }
                         this.$store.state.socket.send(JSON.stringify(ackMsg))
                         break
