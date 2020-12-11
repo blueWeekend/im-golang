@@ -21,10 +21,9 @@ export function confirmMsgStatus(time, status) {
             if(data.is_self==1){
                 data.status=status
                 objectStore.put(data)
-            }
-            
-        }else{
-            cursor.continue()
+            }else{
+                cursor.continue()
+            } 
         }
         
         
