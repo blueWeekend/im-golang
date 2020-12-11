@@ -1,5 +1,6 @@
 import store from '@/components/store/store'
-let db = indexedDB || webkitIndexedDB || mozIndexedDB || null
+let dbHandle = indexedDB || webkitIndexedDB || mozIndexedDB || null
+let db = null
 export function addMsg(data) {
     if (!db) return
     let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
@@ -101,11 +102,11 @@ export function setLatelyDialog(){
 }
 export function init() {
     return new Promise((resolve, reject) => {
-        if(!db){
-            resolve('浏览器不支持indexeddb')
+        if(!dbHandle){
+            resolve('该浏览器不支持indexeddb')
             return
         }
-        let request = db.open("im")
+        let request = dbHandle.open("im")
         request.onsuccess = ()=> {
             db = request.result
             console.log(db)

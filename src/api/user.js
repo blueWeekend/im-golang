@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function loginByPwd(data) {
   return request({
-    url: 'user/loginByPwd',
+    url: 'open/loginByPwd',
     method: 'post',
     data: data
   })

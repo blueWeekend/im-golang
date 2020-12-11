@@ -16,7 +16,7 @@
     import bottom from '@/components/common/bottom'
     import {getUserInfo,getWsConnect} from '@/api/user'
     import {getToken,logout,EVENT_MAP,SRC_MAP,NOT_KEEP_ALIVE_ROUTE,MSG_STATUS_MAP} from '@/utils/global'
-    import {saveLatelyDialog,setLatelyDialog,init as localDbInit} from '@/components/store/indexedDb'
+    import {saveLatelyDialog,setLatelyDialog,init as openLocalDb} from '@/components/store/indexedDb'
     import communicate from '@/utils/communicate'
     const RETRAY_RATE=3000
     const HEART_RATE=60000
@@ -38,6 +38,11 @@
             window.onbeforeunload=()=>{
                 saveLatelyDialog()
             }
+            communicate.$on('setSocket', (token) => {
+                console.log('setSocket')
+                this.token=token
+                this.setSocket()
+            })
             this.token=getToken()
             if(!this.token){
                 return
@@ -58,7 +63,7 @@
                 this.setSocket()
                 this.$store.commit('setUserInfo',data.user_info)
                 this.$store.commit('setFriendList',data.friend_list)
-                localDbInit().then(()=>{
+                openLocalDb().then(()=>{
                     setLatelyDialog().then(()=>{
                         this.$store.commit('finishInit')
                     })
@@ -173,6 +178,7 @@
                 },HEART_RATE)
             },
             reConnect(){
+                console.log('reConnect')
                 if (this.isConnecting) {
                     return
                 }
