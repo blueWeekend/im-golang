@@ -77,9 +77,10 @@ export function setPrivateMsgList(type,targetId,limit=20,start=0){
         cursor.continue()
     }
 }
-export function setLatelyDialog(){
+export function setLatelyDialog(newDialog){
     return new Promise((resolve, reject) => {
         if(!db){
+            store.commit('setLatelyDialog',{'newDialog':newDialog,'oldDialog':[]})
             resolve('浏览器不支持indexeddb')
             return
         }
@@ -88,7 +89,7 @@ export function setLatelyDialog(){
         let request = objectStore.get(1)
         request.onsuccess = (event)=>{
             if(event.target.result instanceof Array && event.target.result.length>0){
-                store.commit('setLatelyDialog',event.target.result)
+                store.commit('setLatelyDialog',{'newDialog':newDialog,'oldDialog':event.target.result})
             }
             resolve()
         }

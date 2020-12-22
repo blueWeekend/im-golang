@@ -64,7 +64,7 @@
                 this.$store.commit('setUserInfo',data.user_info)
                 this.$store.commit('setFriendList',data.friend_list)
                 openLocalDb().then(()=>{
-                    setLatelyDialog().then(()=>{
+                    setLatelyDialog(data.lately_dialog).then(()=>{
                         this.$store.commit('finishInit')
                     })
                 })
