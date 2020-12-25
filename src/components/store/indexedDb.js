@@ -39,7 +39,7 @@ export function saveLatelyDialog(){
             data=store.state.latelyMsgList[item][len-1]
         }
         list.push({
-            type_target_id:item,
+            src_type_target_id:item,
             ...data
         })
     }
@@ -80,7 +80,7 @@ export function setPrivateMsgList(type,targetId,limit=20,start=0){
 export function setLatelyDialog(newDialog){
     return new Promise((resolve, reject) => {
         if(!db){
-            store.commit('setLatelyDialog',{'newDialog':newDialog,'oldDialog':[]})
+            store.commit('setLatelyDialog',{'new_dialog':newDialog,'old_dialog':[]})
             resolve('浏览器不支持indexeddb')
             return
         }
@@ -89,7 +89,7 @@ export function setLatelyDialog(newDialog){
         let request = objectStore.get(1)
         request.onsuccess = (event)=>{
             if(event.target.result instanceof Array && event.target.result.length>0){
-                store.commit('setLatelyDialog',{'newDialog':newDialog,'oldDialog':event.target.result})
+                store.commit('setLatelyDialog',{'new_dialog':newDialog,'old_dialog':event.target.result})
             }
             resolve()
         }

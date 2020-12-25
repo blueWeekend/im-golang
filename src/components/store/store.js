@@ -108,18 +108,24 @@ const store = new Vuex.Store({
         },
         setLatelyDialog(state,payload){
             let isExistFlag={}
-            for(let item of payload['newDialog']){
-                state.latelyMsgIndex.push(item['type']+'-'+item['user_id'])
-                delete item.key
-                Vue.set(state.latelyMsgList, item['type_target_id'], item.content?[item]:[])
+            for(let item of payload['new_dialog']){
+                let key=item['src_type']+'-'+item['user_id']
+                state.latelyMsgIndex.push(key)
+                isExistFlag[key]=true
+                let msg={
+                    content:item['content'],
+                    time:item['time'],
+                    is_self:0
+                }
+                Vue.set(state.latelyMsgList, key, [msg])
             }
-            for(let item of payload['oldDialog']){
-                // if(state.latelyMsgList.type_target_id){
-                //     continue
-                // }
-                state.latelyMsgIndex.push(item['type_target_id'])
+            for(let item of payload['old_dialog']){
+                if(isExistFlag[item['type_target_id']]){
+                    continue
+                }
+                state.latelyMsgIndex.push(item['src_type_target_id'])
                 delete item.key
-                Vue.set(state.latelyMsgList, item['type_target_id'], item.content?[item]:[])
+                Vue.set(state.latelyMsgList, item['src_type_target_id'], item.content?[item]:[])
             }
         },
         setPrivateMsgList(state,payload){
