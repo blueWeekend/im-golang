@@ -114,13 +114,13 @@ const store = new Vuex.Store({
                 isExistFlag[key]=true
                 let msg={
                     content:item['content'],
-                    time:item['time'],
+                    time:item['send_time'],
                     is_self:0
                 }
                 Vue.set(state.latelyMsgList, key, [msg])
             }
             for(let item of payload['old_dialog']){
-                if(isExistFlag[item['type_target_id']]){
+                if(isExistFlag[item['src_type_target_id']]){
                     continue
                 }
                 state.latelyMsgIndex.push(item['src_type_target_id'])

@@ -49,7 +49,7 @@ export function saveLatelyDialog(){
     let objectStore = db.transaction(["lately_dialog"], "readwrite").objectStore('lately_dialog')
     objectStore.put(list,1)
 }
-export function setPrivateMsgList(type,targetId,limit=20,start=0){
+export function setPrivateMsgList(type,targetId,limit=20,page=1){
     if (!db) return
     // if(state.NewMsgNumMap.hasOwnProperty(payload['type']+'-'+payload['target_id'])){
     //     todo getMsgList
@@ -63,14 +63,14 @@ export function setPrivateMsgList(type,targetId,limit=20,start=0){
         let cursor = event.target.result
         if(i==limit || !cursor){
             data.reverse()
-            if(start==0 && data.length>0){
+            if(page==1 && data.length>0){
                 data.splice(data.length-1,1)
             }
             store.commit('setPrivateMsgList',{msg_list:data,type:type,target_id:targetId})
             return
         }
-        if(i==0 && start>0){
-            cursor.continue(start)
+        if(i==0 && page>1){
+            cursor.continue((page-1)*limit)
         }
         data.push(cursor.value)
         i++
@@ -88,9 +88,11 @@ export function setLatelyDialog(newDialog){
         let objectStore = transaction.objectStore("lately_dialog")
         let request = objectStore.get(1)
         request.onsuccess = (event)=>{
+            let oldDialog=[]
             if(event.target.result instanceof Array && event.target.result.length>0){
-                store.commit('setLatelyDialog',{'new_dialog':newDialog,'old_dialog':event.target.result})
+                oldDialog=event.target.result
             }
+            store.commit('setLatelyDialog',{'new_dialog':newDialog,'old_dialog':oldDialog})
             resolve()
         }
         request.onerror=(event)=>{
