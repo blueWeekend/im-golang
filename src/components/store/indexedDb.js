@@ -9,21 +9,17 @@ export function addMsg(data) {
     data.dialog_key=data.user_id<data.target_id?data.user_id+'-'+data.target_id:data.target_id+'-'+data.user_id
     objectStore.add(data)
 }
-export function confirmMsgStatus(time, status) {
+export function confirmMsgStatus(time, userId,status) {
     if (!db) return
     let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
-    let index = objectStore.index("time")
-    //同一用户发消息毫秒时间戳唯一  time,is_self
-    index.openCursor(IDBKeyRange.only(time)).onsuccess = function (event) {
+    let index = objectStore.index("time_uid")
+    //同一用户发消息毫秒时间戳唯一 
+    index.openCursor(IDBKeyRange.only([time,userId])).onsuccess = function (event) {
         let cursor = event.target.result
         if(cursor){
             let data=cursor.value
-            if(data.is_self==1){
-                data.status=status
-                objectStore.put(data)
-            }else{
-                cursor.continue()
-            } 
+            data.status=status
+            objectStore.put(data)
         }
         
         
@@ -51,31 +47,52 @@ export function saveLatelyDialog(){
 }
 export function setPrivateMsgList(type,targetId,limit=20,page=1){
     if (!db) return
-    // if(state.NewMsgNumMap.hasOwnProperty(payload['type']+'-'+payload['target_id'])){
+    // if(state.msgNumMap.hasOwnProperty(payload['type']+'-'+payload['target_id'])){
     //     todo getMsgList
     // }
+    let key=type+'-'+targetId
     let dialogKey=store.state.userInfo['user_id']<targetId?store.state.userInfo['user_id']+'-'+targetId:targetId+'-'+store.state.userInfo['user_id']
     let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
     let index = objectStore.index("dialog_key")
     let i=0
     let data=[]
+    let firstRamMsgId=getFirstrRamMsgId(store.state.latelyMsgList[key])
     index.openCursor(IDBKeyRange.only(dialogKey),'prev').onsuccess = function (event) {
         let cursor = event.target.result
         if(i==limit || !cursor){
             data.reverse()
-            if(page==1 && data.length>0){
-                data.splice(data.length-1,1)
-            }
             store.commit('setPrivateMsgList',{msg_list:data,type:type,target_id:targetId})
             return
         }
-        if(i==0 && page>1){
-            cursor.continue((page-1)*limit)
+        if(firstRamMsgId>0 && cursor.value.id>=firstRamMsgId){
+            cursor.continue()
+        }else{
+            data.push(cursor.value)
+            i++
+            cursor.continue()
         }
-        data.push(cursor.value)
-        i++
-        cursor.continue()
+        
     }
+}
+function getFirstrRamMsgId(msgList){
+    return new Promise((resolve, reject) => {
+        if(msgList.length==0){
+            resolve(0)
+            return
+        }
+        let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
+        let index = objectStore.index("time_uid")
+        //同一用户发消息毫秒时间戳唯一  
+        index.openCursor(IDBKeyRange.only([msgList[0]['time'],msgList[0]['user_id']])).onsuccess = function (event) {
+            let cursor = event.target.result
+            if(cursor){
+                resolve(cursor.value.id)
+            }else{
+                resolve(0)
+            }
+        }
+    })
+    
 }
 export function setLatelyDialog(newDialog){
     return new Promise((resolve, reject) => {
@@ -124,7 +141,7 @@ export function init() {
                 let objectStore = db.createObjectStore('private_msg', { autoIncrement: true,keyPath: "id" })
                 // objectStore.createIndex('user_id', 'user_id', { unique: false })
                 // objectStore.createIndex('target_id', 'target_id', { unique: false })
-                objectStore.createIndex('time', 'time', { unique: false })
+                objectStore.createIndex('time_uid', ['time','user_id'], { unique: true })
                 objectStore.createIndex('dialog_key', 'dialog_key', { unique: false })
             }                                
             if (!db.objectStoreNames.contains('lately_dialog')) {

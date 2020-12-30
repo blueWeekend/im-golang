@@ -140,6 +140,7 @@
                     case EVENT_MAP.ACK:
                         msg={
                             user_id:data.user_id,
+                            target_id:data.target_id,
                             src_type:data.src_type,
                             time:data.time,
                             is_self:0,

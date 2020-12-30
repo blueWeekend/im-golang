@@ -13,7 +13,7 @@ const store = new Vuex.Store({
         bottomLabel:'msgList',
         friendList:{},
         socket:null,
-        NewMsgNumMap:{},
+        msgNumMap:{},//未读消息与离线消息数量
         isInitPrivateMsgMap:{}
     },
     mutations: {
@@ -88,9 +88,16 @@ const store = new Vuex.Store({
            
         },
         confirmMsgStatus(state, payload){
-            //let key=payload['src_type']+'-'+payload['user_id']
-            confirmMsgStatus(payload.time,payload['status'])
-            let key=payload['src_type']+'-'+(payload['is_self']===1?payload['target_id']:payload['user_id'])
+            let fromId,targetId
+            if(payload['is_self']===1){
+                fromId=payload['user_id']
+                targetId=payload['target_id']
+            }else{
+                fromId=payload['target_id']
+                targetId=payload['user_id']
+            }
+            confirmMsgStatus(payload['time'],fromId,payload['status'])
+            let key=payload['src_type']+'-'+targetId
             let left=0
             let right=state.latelyMsgList[key].length-1
             let mid
@@ -109,7 +116,9 @@ const store = new Vuex.Store({
         setLatelyDialog(state,payload){
             let isExistFlag={}
             for(let item of payload['new_dialog']){
+                state.offlineMsgNumMap
                 let key=item['src_type']+'-'+item['user_id']
+                Vue.set(state.msgNumMap, key,{'offline_msg_num':item['total'],'not_read_msg_num':item['total']})
                 state.latelyMsgIndex.push(key)
                 isExistFlag[key]=true
                 let msg={
