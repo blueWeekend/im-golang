@@ -53,7 +53,9 @@ const store = new Vuex.Store({
                     status:MSG_STATUS_MAP.SENDING,
                     content:payload['content'],
                     time:payload['time'],
-                    is_self:payload['is_self']
+                    is_self:payload['is_self'],
+                    user_id:payload['user_id'],
+                    target_id:payload['target_id'],
                 }
                 addMsg({...payload,status:MSG_STATUS_MAP.SENDING})
                 state.latelyMsgList[key].push(msg)
@@ -76,7 +78,9 @@ const store = new Vuex.Store({
                         status:MSG_STATUS_MAP.SENDING,
                         content:payload['content'],
                         time:payload['time'],
-                        is_self:payload['is_self']
+                        is_self:payload['is_self'],
+                        user_id:payload['user_id'],
+                        target_id:payload['target_id'],
                     }
                     addMsg({...payload,status:MSG_STATUS_MAP.SENDING})
                     Vue.set(state.latelyMsgList, key, [msg])
@@ -122,9 +126,11 @@ const store = new Vuex.Store({
                 state.latelyMsgIndex.push(key)
                 isExistFlag[key]=true
                 let msg={
+                    user_id:item['user_id'],
+                    target_id:item['target_id'],
                     content:item['content'],
                     time:item['send_time'],
-                    is_self:0
+                    is_self:0,
                 }
                 Vue.set(state.latelyMsgList, key, [msg])
             }
@@ -133,7 +139,6 @@ const store = new Vuex.Store({
                     continue
                 }
                 state.latelyMsgIndex.push(item['src_type_target_id'])
-                delete item.key
                 Vue.set(state.latelyMsgList, item['src_type_target_id'], item.content?[item]:[])
             }
         },

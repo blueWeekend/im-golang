@@ -45,18 +45,23 @@ export function saveLatelyDialog(){
     let objectStore = db.transaction(["lately_dialog"], "readwrite").objectStore('lately_dialog')
     objectStore.put(list,1)
 }
-export function setPrivateMsgList(type,targetId,limit=20,page=1){
+export function setPrivateMsgList(type,targetId,limit=20){
     if (!db) return
-    // if(state.msgNumMap.hasOwnProperty(payload['type']+'-'+payload['target_id'])){
-    //     todo getMsgList
-    // }
     let key=type+'-'+targetId
+    if(state.msgNumMap.key && state.msgNumMap.key['offline_msg_num']>0){
+        
+    }
+    getFirstrRamMsgId(store.state.latelyMsgList[key]).then(data=>{
+        getLocalPrivateMsgList(type,targetId,data,limit)
+    })
+    
+}
+function getLocalPrivateMsgList(type,targetId,firstRamMsgId,limit){
     let dialogKey=store.state.userInfo['user_id']<targetId?store.state.userInfo['user_id']+'-'+targetId:targetId+'-'+store.state.userInfo['user_id']
     let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
     let index = objectStore.index("dialog_key")
     let i=0
     let data=[]
-    let firstRamMsgId=getFirstrRamMsgId(store.state.latelyMsgList[key])
     index.openCursor(IDBKeyRange.only(dialogKey),'prev').onsuccess = function (event) {
         let cursor = event.target.result
         if(i==limit || !cursor){

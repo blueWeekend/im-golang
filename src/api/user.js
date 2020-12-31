@@ -17,3 +17,10 @@ export function getUserInfo(data) {
 export function getWsConnect(token){
   return new WebSocket("ws://127.0.0.1:70/ws/connect",token)
 }
+export function getPrivateMsgList(){
+  return request({
+    url: 'user/getPrivateMsgList',
+    method: 'post',
+    data: data
+  })
+}
