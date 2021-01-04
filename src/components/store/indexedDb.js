@@ -48,41 +48,47 @@ export function saveLatelyDialog(){
 export function setPrivateMsgList(type,targetId,limit=20){
     if (!db) return
     let key=type+'-'+targetId
-    if(state.msgNumMap.key && state.msgNumMap.key['offline_msg_num']>0){
+    if(store.state.msgNumMap.key && store.state.msgNumMap.key['offline_msg_num']>0){
         
     }
-    getFirstrRamMsgId(store.state.latelyMsgList[key]).then(data=>{
+    getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
         getLocalPrivateMsgList(type,targetId,data,limit)
     })
     
 }
-function getLocalPrivateMsgList(type,targetId,firstRamMsgId,limit){
+function getLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
     let dialogKey=store.state.userInfo['user_id']<targetId?store.state.userInfo['user_id']+'-'+targetId:targetId+'-'+store.state.userInfo['user_id']
     let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
     let index = objectStore.index("dialog_key")
     let i=0
     let data=[]
-    index.openCursor(IDBKeyRange.only(dialogKey),'prev').onsuccess = function (event) {
+    let item
+    index.openCursor(IDBKeyRange.lowerBound(dialogKey),'prev').onsuccess = function (event) {
         let cursor = event.target.result
         if(i==limit || !cursor){
             data.reverse()
             store.commit('setPrivateMsgList',{msg_list:data,type:type,target_id:targetId})
             return
         }
-        if(firstRamMsgId>0 && cursor.value.id>=firstRamMsgId){
-            cursor.continue()
+        if(dialogLastLocalMsg && dialogLastLocalMsg['time']<cursor.value.time){
+            cursor.continue([dialogLastLocalMsg['dialog_key'],dialogLastLocalMsg['time']])
+            dialogLastLocalMsg=null
         }else{
-            data.push(cursor.value)
-            i++
+            //减少.value懒加载性能消耗
+            item=cursor.value
+            if(dialogLastLocalMsg['id']!=item.id){
+                data.push(item)
+                i++
+            }
             cursor.continue()
         }
         
     }
 }
-function getFirstrRamMsgId(msgList){
+function getDialogLastLocalMsg(msgList){
     return new Promise((resolve, reject) => {
         if(msgList.length==0){
-            resolve(0)
+            resolve(false)
             return
         }
         let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
@@ -91,9 +97,10 @@ function getFirstrRamMsgId(msgList){
         index.openCursor(IDBKeyRange.only([msgList[0]['time'],msgList[0]['user_id']])).onsuccess = function (event) {
             let cursor = event.target.result
             if(cursor){
-                resolve(cursor.value.id)
+                let key=cursor.value.user_id<cursor.value.target_id?cursor.value.user_id+'-'+cursor.value.target_id:cursor.value.target_id+'-'+cursor.value.user_id
+                resolve({'dialog_key':key,'time':cursor.value.time,'id':cursor.value.id})
             }else{
-                resolve(0)
+                resolve(false)
             }
         }
     })
@@ -147,7 +154,7 @@ export function init() {
                 // objectStore.createIndex('user_id', 'user_id', { unique: false })
                 // objectStore.createIndex('target_id', 'target_id', { unique: false })
                 objectStore.createIndex('time_uid', ['time','user_id'], { unique: true })
-                objectStore.createIndex('dialog_key', 'dialog_key', { unique: false })
+                objectStore.createIndex('dialog_key', ['dialog_key','time'], { unique: false })
             }                                
             if (!db.objectStoreNames.contains('lately_dialog')) {
                 let objectStore = db.createObjectStore('lately_dialog',{autoIncrement: true})

@@ -118,6 +118,7 @@ const store = new Vuex.Store({
             }
         },
         setLatelyDialog(state,payload){
+            console.log(payload)
             let isExistFlag={}
             for(let item of payload['new_dialog']){
                 state.offlineMsgNumMap
