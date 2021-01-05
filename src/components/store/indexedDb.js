@@ -1,4 +1,5 @@
 import store from '@/components/store/store'
+import {getPrivateMsgList} from '@/api/user'
 let dbHandle = indexedDB || webkitIndexedDB || mozIndexedDB || null
 let db = null
 export function addMsg(data) {
@@ -48,8 +49,10 @@ export function saveLatelyDialog(){
 export function setPrivateMsgList(type,targetId,limit=20){
     if (!db) return
     let key=type+'-'+targetId
-    if(store.state.msgNumMap.key && store.state.msgNumMap.key['offline_msg_num']>0){
-        
+    if(store.state.msgNumMap.key){
+        if(store.state.msgNumMap.key['offline_msg_num']>0){
+            getPrivateMsgList()
+        }
     }
     getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
         getLocalPrivateMsgList(type,targetId,data,limit)
