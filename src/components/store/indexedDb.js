@@ -51,13 +51,26 @@ export function setPrivateMsgList(type,targetId,limit=20){
     let key=type+'-'+targetId
     if(store.state.msgNumMap.key){
         if(store.state.msgNumMap.key['offline_msg_num']>0){
-            getPrivateMsgList()
+            let item=store.state.latelyMsgList[0]
+            getPrivateMsgList({
+                'id':item['msg_id'],
+                'created_at':item['created_at']
+            }).then(offlineMsgList=>{
+                getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
+                    getLocalPrivateMsgList(type,targetId,data,limit)
+                })
+            })
         }
+    }else{
+        getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
+            getLocalPrivateMsgList(type,targetId,data,limit)
+        })
     }
-    getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
-        getLocalPrivateMsgList(type,targetId,data,limit)
-    })
+   
     
+}
+function getOfflinePrivateMsgList(){
+
 }
 function getLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
     let dialogKey=store.state.userInfo['user_id']<targetId?store.state.userInfo['user_id']+'-'+targetId:targetId+'-'+store.state.userInfo['user_id']

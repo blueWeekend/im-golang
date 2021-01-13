@@ -132,6 +132,8 @@ const store = new Vuex.Store({
                     content:item['content'],
                     time:item['send_time'],
                     is_self:0,
+                    msg_id:item['id'],
+                    created_at:item['created_at']
                 }
                 Vue.set(state.latelyMsgList, key, [msg])
             }
