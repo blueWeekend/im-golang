@@ -91,6 +91,10 @@ const store = new Vuex.Store({
             }
            
         },
+        alterMsgNum(state,payload){
+            state.msgNumMap[payload['key']]['offline_msg_num']=payload['offline_msg_num']
+            state.msgNumMap[payload['key']]['not_read_msg_num']=payload['not_read_msg_num']
+        },
         confirmMsgStatus(state, payload){
             let fromId,targetId
             if(payload['is_self']===1){
