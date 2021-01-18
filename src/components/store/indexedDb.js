@@ -49,19 +49,23 @@ export function saveLatelyDialog(){
 export function setPrivateMsgList(type,targetId,limit=20){
     if (!db) return
     let key=type+'-'+targetId
-    if(store.state.msgNumMap.key){
-        if(store.state.msgNumMap.key['offline_msg_num']>0){
-            let item=store.state.latelyMsgList[0]
+   
+    if(store.state.msgNumMap[key]){
+        if(store.state.msgNumMap[key]['offline_msg_num']>0){
+            let item=store.state.latelyMsgList[key][0]
+            console.log(item)
             getPrivateMsgList({
-                id:item['msg_id'],
-                created_at:item['created_at'],
-                limit:store.state.msgNumMap.key['offline_msg_num']-1,
+                id:item['msg_id'] || 0,
+                created_at:item['created_at'] || '0000 00:00:00',
+                limit:store.state.msgNumMap[key]['offline_msg_num']-1,
             }).then(offlineMsgList=>{
+                console.log(offlineMsgList)
+                return false
                 //todo优化为分页请求
                 store.commit('alterMsgNum',{
                     key:key,
-                    offline_msg_num:store.state.msgNumMap.key['offline_msg_num'],
-                    not_read_msg_num:store.state.msgNumMap.key['not_read_msg_num']
+                    offline_msg_num:store.state.msgNumMap[key]['offline_msg_num'],
+                    not_read_msg_num:store.state.msgNumMap[key]['not_read_msg_num']
                 })
                 getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
                     getLocalPrivateMsgList(type,targetId,data,limit)
