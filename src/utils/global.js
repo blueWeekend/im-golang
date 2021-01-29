@@ -6,6 +6,7 @@ export const NOT_KEEP_ALIVE_ROUTE=[
     'im-dialog',
     'im-msgList',
 ]
+export const PER_LOAD_MSG_LIMIT=20  //私聊界面单次加载消息数量
 export function getToken() {
     return localStorage.getItem("im:access_token")
 }

@@ -1,5 +1,6 @@
 import store from '@/components/store/store'
-import {getPrivateMsgList} from '@/api/user'
+import {getOfflineMsgList} from '@/api/user'
+import {PER_LOAD_MSG_LIMIT} from '@/utils/global'
 let dbHandle = indexedDB || webkitIndexedDB || mozIndexedDB || null
 let db = null
 export function addMsg(data) {
@@ -51,25 +52,27 @@ export function setPrivateMsgList(type,targetId,limit=20){
     let key=type+'-'+targetId
    
     if(store.state.msgNumMap[key]){
-        if(store.state.msgNumMap[key]['offline_msg_num']>0){
+        if(store.state.msgNumMap[key]['offline_msg_num']>1){
             let item=store.state.latelyMsgList[key][0]
-            console.log(item)
-            getPrivateMsgList({
+            //todo优化为分页请求
+            getOfflineMsgList({
+                user_id:targetId,
                 id:item['msg_id'] || 0,
                 created_at:item['created_at'] || '0000 00:00:00',
                 limit:store.state.msgNumMap[key]['offline_msg_num']-1,
             }).then(offlineMsgList=>{
                 console.log(offlineMsgList)
-                return false
-                //todo优化为分页请求
                 store.commit('alterMsgNum',{
                     key:key,
-                    offline_msg_num:store.state.msgNumMap[key]['offline_msg_num'],
-                    not_read_msg_num:store.state.msgNumMap[key]['not_read_msg_num']
+                    offline_msg_num:0,
+                    not_read_msg_num:0
                 })
-                getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
-                    getLocalPrivateMsgList(type,targetId,data,limit)
-                })
+                if(store.state.msgNumMap[key]['offline_msg_num']<PER_LOAD_MSG_LIMIT){
+                    getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
+                        getLocalPrivateMsgList(type,targetId,data,PER_LOAD_MSG_LIMIT-store.state.msgNumMap[key]['offline_msg_num'])
+                    })
+                }
+                
             })
         }
     }else{
