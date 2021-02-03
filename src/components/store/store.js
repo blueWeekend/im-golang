@@ -51,13 +51,9 @@ const store = new Vuex.Store({
                 }
                 let msg={
                     status:MSG_STATUS_MAP.SENDING,
-                    content:payload['content'],
-                    time:payload['time'],
-                    is_self:payload['is_self'],
-                    user_id:payload['user_id'],
-                    target_id:payload['target_id'],
+                    ...payload,
                 }
-                addMsg({...payload,status:MSG_STATUS_MAP.SENDING})
+                addMsg({...payload,status:MSG_STATUS_MAP.FAIL})
                 state.latelyMsgList[key].push(msg)
                 // state.latelyMsgIndex.splice(i,1)
                 // state.latelyMsgIndex.unshift(key)
@@ -76,13 +72,9 @@ const store = new Vuex.Store({
                 if(payload['content']){
                     let msg={
                         status:MSG_STATUS_MAP.SENDING,
-                        content:payload['content'],
-                        time:payload['time'],
-                        is_self:payload['is_self'],
-                        user_id:payload['user_id'],
-                        target_id:payload['target_id'],
+                        ...payload,
                     }
-                    addMsg({...payload,status:MSG_STATUS_MAP.SENDING})
+                    addMsg({...payload,status:MSG_STATUS_MAP.FAIL})
                     Vue.set(state.latelyMsgList, key, [msg])
                 }else{
                     Vue.set(state.latelyMsgList, key,[])

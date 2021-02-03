@@ -9,6 +9,7 @@ export function addMsg(data) {
     delete data.event
     //冗余字段便于indexeddb查询本地记录
     data.dialog_key=data.user_id<data.target_id?data.user_id+'-'+data.target_id:data.target_id+'-'+data.user_id
+
     objectStore.add(data)
 }
 export function confirmMsgStatus(time, userId,status) {
@@ -47,7 +48,7 @@ export function saveLatelyDialog(){
     let objectStore = db.transaction(["lately_dialog"], "readwrite").objectStore('lately_dialog')
     objectStore.put(list,1)
 }
-export function setPrivateMsgList(type,targetId,limit=20){
+export function setPrivateMsgList(type,targetId,limit=PER_LOAD_MSG_LIMIT){
     if (!db) return
     let key=type+'-'+targetId
    
@@ -74,6 +75,10 @@ export function setPrivateMsgList(type,targetId,limit=20){
                 }
                 
             })
+        }else{
+            getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
+                getLocalPrivateMsgList(type,targetId,data,PER_LOAD_MSG_LIMIT)
+            })
         }
     }else{
         getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
@@ -83,8 +88,21 @@ export function setPrivateMsgList(type,targetId,limit=20){
    
     
 }
-function getOfflinePrivateMsgList(){
-
+function getLastActiveTime(){
+    return new Promise((resolve, reject) => {
+        if (!db) resolve(0)
+        let transaction = db.transaction(["lately_dialog"],"readwrite")
+        let objectStore = transaction.objectStore("lately_dialog")
+        let request = objectStore.get(1)
+        request.onsuccess = (event)=>{
+            if(event.target.result instanceof Array && event.target.result.length>0){
+                resolve(event.target.result[0]['time'])
+                return
+            }
+            resolve(0)
+        }
+    })
+    
 }
 function getLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
     let dialogKey=store.state.userInfo['user_id']<targetId?store.state.userInfo['user_id']+'-'+targetId:targetId+'-'+store.state.userInfo['user_id']
@@ -140,7 +158,7 @@ export function setLatelyDialog(newDialog){
     return new Promise((resolve, reject) => {
         if(!db){
             store.commit('setLatelyDialog',{'new_dialog':newDialog,'old_dialog':[]})
-            resolve('浏览器不支持indexeddb')
+            resolve('该浏览器不支持indexeddb')
             return
         }
         let transaction = db.transaction(["lately_dialog"],"readwrite")

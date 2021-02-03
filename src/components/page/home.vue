@@ -31,7 +31,8 @@
                 waitAckMsgList:[],
                 ackMsgListTimer:null,
                 heartTimer:null,
-                reConnectTimer:null
+                reConnectTimer:null,
+                lastOfflineMsg:null
             }
         },
         created() {
@@ -68,7 +69,19 @@
                         this.$store.commit('finishInit')
                     })
                 })
-                
+                data.lately_dialog.length>0?this.setLastOfflineMsg(data.lately_dialog[0]):null
+            },
+            setLastOfflineMsg(data){
+                let ackMsg={
+                    msg_id:data.id,
+                    user_id:data.target_id,
+                    src_type:data.src_type,
+                    target_id:data.user_id,
+                    event:EVENT_MAP.ACK,
+                    time:data.send_time,
+                    created_at:data.created_at
+                }
+                this.lastOfflineMsg=ackMsg
             },
             filterWaitAckMsgList(){
                 if(this.waitAckMsgList.length==0){
@@ -159,6 +172,9 @@
             },
             onopen(){
                 this.heart()
+                if(this.lastOfflineMsg){
+                    this.$store.state.socket.send(JSON.stringify(this.lastOfflineMsg))
+                }
             },
             onerror(e){
                 console.log(e)
