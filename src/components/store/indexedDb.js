@@ -116,7 +116,7 @@ function getLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
                 getOfflineMsgList({
                     user_id:targetId,
                     id:item['msg_id'] || 0,
-                    created_at:item['created_at'],
+                    end_time:item['created_at'],
                     begin_time:item['begin_time'],
                     limit:item['total']-1,
                 }).then(offlineMsgList=>{

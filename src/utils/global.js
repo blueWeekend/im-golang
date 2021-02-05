@@ -1,4 +1,4 @@
-export const EVENT_MAP={NOT_LOGIN:401,PING:201,MSG:200,ACK:202}
+export const EVENT_MAP={NOT_LOGIN:401,PING:201,MSG:200,ACK:202,RETRY:203}
 export const SRC_MAP={FRIEND:1,GROUP:2}
 export const CNT_MAP={TEXT:1,MSG:2,FILE:3}
 export const MSG_STATUS_MAP={SENDING:0,SUCCESS:1,FAIL:-1}
@@ -7,6 +7,7 @@ export const NOT_KEEP_ALIVE_ROUTE=[
     'im-msgList',
 ]
 export const PER_LOAD_MSG_LIMIT=20  //私聊界面单次加载消息数量
+export const MSG_MAX_RETRY_TIME=15000 //失败消息最大重试时间
 export function getToken() {
     return localStorage.getItem("im:access_token")
 }

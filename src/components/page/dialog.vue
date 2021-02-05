@@ -115,8 +115,8 @@
                 }
                 this.$store.commit('pushMsg',msg)
                 delete msg.is_self
-                communicate.$emit('pushWaitAckMsg',msg)
                 this.$store.state.socket.send(JSON.stringify(msg))
+                communicate.$emit('pushWaitAckMsg',msg)
                 this.chatContent = ''
                 this.alterScrollTop()  
             },

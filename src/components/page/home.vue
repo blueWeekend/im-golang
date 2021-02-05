@@ -15,7 +15,7 @@
 <script>
     import bottom from '@/components/common/bottom'
     import {getUserInfo,getWsConnect} from '@/api/user'
-    import {getToken,logout,EVENT_MAP,SRC_MAP,NOT_KEEP_ALIVE_ROUTE,MSG_STATUS_MAP} from '@/utils/global'
+    import {getToken,logout,EVENT_MAP,NOT_KEEP_ALIVE_ROUTE,MSG_STATUS_MAP,MSG_MAX_RETRY_TIME} from '@/utils/global'
     import {saveLatelyDialog,setLatelyDialog,init as openLocalDb} from '@/components/store/indexedDb'
     import communicate from '@/utils/communicate'
     const RETRAY_RATE=3000
@@ -51,6 +51,7 @@
                 return
             }
             communicate.$on('pushWaitAckMsg', (data) => {
+                data.event=EVENT_MAP.RETRY
                 this.waitAckMsgList.push(data)
                 if(this.ackMsgListTimer){
                     return
@@ -93,7 +94,7 @@
                 }
                 let curTime=new Date().getTime()
                 for(let i in this.waitAckMsgList){
-                    if(curTime-this.waitAckMsgList[i]['time']>15000){
+                    if(curTime-this.waitAckMsgList[i]['time']>MSG_MAX_RETRY_TIME){
                         //剔除掉15秒内没重发成功的消息
                         let msg={
                             user_id:this.waitAckMsgList[i]['user_id'],
