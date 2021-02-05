@@ -40,9 +40,11 @@
                 saveLatelyDialog()
             }
             communicate.$on('setSocket', (token) => {
-                console.log('setSocket')
                 this.token=token
                 this.setSocket()
+            })
+             communicate.$on('setLastOfflineMsg', (data) => {
+                this.setLastOfflineMsg(data)
             })
             this.token=getToken()
             if(!this.token){
@@ -174,6 +176,7 @@
                 this.heart()
                 if(this.lastOfflineMsg){
                     this.$store.state.socket.send(JSON.stringify(this.lastOfflineMsg))
+                    this.lastOfflineMsg=null
                 }
             },
             onerror(e){

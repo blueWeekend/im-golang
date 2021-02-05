@@ -122,21 +122,14 @@ const store = new Vuex.Store({
                 Vue.set(state.msgNumMap, key,{'offline_msg_num':item['total'],'not_read_msg_num':item['total']})
                 state.latelyMsgIndex.push(key)
                 isExistFlag[key]=true
-                let msg={
-                    user_id:item['user_id'],
-                    target_id:item['target_id'],
-                    content:item['content'],
-                    time:item['send_time'],
-                    is_self:0,
-                    msg_id:item['id'],
-                    created_at:item['created_at']
-                }
-                Vue.set(state.latelyMsgList, key, [msg])
+            
+                Vue.set(state.latelyMsgList, key, [item])
             }
             for(let item of payload['old_dialog']){
                 if(isExistFlag[item['src_type_target_id']]){
                     continue
                 }
+                Vue.set(state.msgNumMap, item['src_type_target_id'],{'offline_msg_num':0,'not_read_msg_num':0})
                 state.latelyMsgIndex.push(item['src_type_target_id'])
                 Vue.set(state.latelyMsgList, item['src_type_target_id'], item.content?[item]:[])
             }
