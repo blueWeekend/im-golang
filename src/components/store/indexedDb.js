@@ -29,14 +29,17 @@ export function confirmMsgStatus(time, userId,status) {
     }
 }
 function alterMsgById(id,obj){
-    if (!db) return
-    let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
-    let request=objectStore.get(id)
-    request.onsuccess=function(event){
-        if(event.target.result){
-            objectStore.put(obj)
-        }
-    } 
+    return new Promise((resolve, reject) => {
+        if (!db) resolve(1)
+        let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
+        let request=objectStore.get(id)
+        request.onsuccess=function(event){
+            if(event.target.result){
+                objectStore.put(obj)
+            }
+            resolve(1)
+        } 
+    })
 }
 export function saveLatelyDialog(){
     if (!db) return
@@ -117,8 +120,6 @@ function getLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
                     begin_time:item['begin_time'],
                     limit:item['total']-1,
                 }).then(offlineMsgList=>{
-                    console.log(offlineMsgList)
-                   // data.push(...offlineMsgList)
                     for(let _item of offlineMsgList){
                         _item['msg_id']=_item['id']
                         _item['time']=_item['send_time']
@@ -138,7 +139,11 @@ function getLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
                     })
                     delete item['total']
                     delete item['begin_time']
-                    alterMsgById(item['id'],item)
+                    alterMsgById(item['id'],item).then(()=>{
+                        if(store.state.latelyMsgList[type+'-'+targetId].length<limit){
+                            setPrivateMsgList(type,targetId)
+                        }
+                    })
                 })
             }else{
                 cursor.continue()

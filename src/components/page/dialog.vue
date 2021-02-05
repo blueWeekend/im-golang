@@ -61,6 +61,9 @@
             }
         },
         created() {
+            communicate.$on('alterScrollTop', () => {
+                this.alterScrollTop()
+            })
             this.friendId=parseInt(this.$route.params.friendId)
             this.srcType=this.$route.params.srcType
             this.msgKey=this.srcType+'-'+this.friendId
@@ -115,11 +118,13 @@
                 communicate.$emit('pushWaitAckMsg',msg)
                 this.$store.state.socket.send(JSON.stringify(msg))
                 this.chatContent = ''
+                this.alterScrollTop()  
+            },
+            alterScrollTop(){
                 this.$nextTick(() => {
                     this.$refs.list.scrollTop = this.$refs.list.scrollHeight
                     this.$refs.msg.focus()
                 })
-                
             },
             back(){
                 this.$router.go(-1)

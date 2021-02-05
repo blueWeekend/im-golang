@@ -151,6 +151,7 @@
                             created_at:data.created_at
                         }
                         this.$store.state.socket.send(JSON.stringify(ackMsg))
+                        communicate.$emit('alterScrollTop')
                         break
                     case EVENT_MAP.ACK:
                         msg={
