@@ -8,7 +8,7 @@
                             <img width="45" height="45" :src="avatar">
                         </div>
                         <div class="text">
-                            <h2 class="target-name" v-html="friendIdnicknameMap[index]"></h2>
+                            <h2 class="target-name" v-html="getTargetName(data)"></h2>
                             <template v-if="$store.state.latelyMsgList[data].length>0">
                                 <h3 class="last-msg">{{$store.state.latelyMsgList[data][$store.state.latelyMsgList[data].length-1]['content']}}</h3>
                                 <h3 class="last-msg-time">{{formatTime($store.state.latelyMsgList[data][$store.state.latelyMsgList[data].length-1]['time'])}}</h3>
@@ -58,14 +58,18 @@
                 this.$router.push('/home/friendList/dialog/'+arr[1]+'/'+arr[0])
             },
             formatTime,
+            getTargetName(typeAndTargetId){
+                let arr=typeAndTargetId.split('-')
+                if(arr[0]==SRC_MAP.FRIEND){
+                        return this.$store.state.friendList[arr[1]]['nickname']
+                }else{
+                    //todo 获取群名
+                        return ''
+                }
+            }
         },
         computed: {
-            friendIdnicknameMap() {
-                return this.$store.state.latelyMsgIndex.map(item => {
-                    let friendId=item.split('-')[1]
-                    return this.$store.state.friendList[friendId]['nickname']
-                })
-            }
+            
         },
     }
 </script>

@@ -35,13 +35,13 @@ const store = new Vuex.Store({
                     return
                 }
                 if(payload['is_self']!=1){
-                    //确保消息不重
+                    //防止消息重复
                     let left=0
                     let right=state.latelyMsgList[key].length-1
                     let mid
                     while(left<=right){
                         mid=left+((right-left)>>1)
-                        if(state.latelyMsgList[key][mid]['time']==payload['time']){
+                        if(state.latelyMsgList[key][mid]['time']==payload['time'] && state.latelyMsgList[key][mid]['is_self']==0){
                             return
                         }else if(state.latelyMsgList[key][mid]['time']<payload['time']){
                             left=mid+1
@@ -116,18 +116,15 @@ const store = new Vuex.Store({
         },
         setLatelyDialog(state,payload){
             console.log(payload)
-            let isExistFlag={}
             for(let item of payload['new_dialog']){
                 state.offlineMsgNumMap
                 let key=item['src_type']+'-'+item['user_id']
                 Vue.set(state.msgNumMap, key,{'offline_msg_num':item['total'],'not_read_msg_num':item['total']})
                 state.latelyMsgIndex.push(key)
-                isExistFlag[key]=true
-            
                 Vue.set(state.latelyMsgList, key, [item])
             }
             for(let item of payload['old_dialog']){
-                if(isExistFlag[item['src_type_target_id']]){
+                if(state.latelyMsgList[item['src_type_target_id']]){
                     continue
                 }
                 Vue.set(state.msgNumMap, item['src_type_target_id'],{'offline_msg_num':0,'not_read_msg_num':0})
