@@ -65,8 +65,9 @@ export function setPrivateMsgList(type,targetId,limit=PER_LOAD_MSG_LIMIT){
     if (!db) return
     let key=type+'-'+targetId
     getDialogLastLocalMsg(store.state.latelyMsgList[key]).then(data=>{
-        getLocalPrivateMsgList(type,targetId,data,limit)
+        setLocalPrivateMsgList(type,targetId,data,limit)
     })
+    
 }
 function getLastActiveTime(){
     return new Promise((resolve, reject) => {
@@ -84,18 +85,17 @@ function getLastActiveTime(){
     })
     
 }
-function getLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
-    console.log(dialogLastLocalMsg)
+function setLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
     let dialogKey=store.state.userInfo['user_id']<targetId?store.state.userInfo['user_id']+'-'+targetId:targetId+'-'+store.state.userInfo['user_id']
     let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
     let index = objectStore.index("dialog_key")
     let i=0
     let data=[]
     let item
-    index.openCursor(IDBKeyRange.lowerBound(dialogKey),'prev').onsuccess = function (event) {
+    let maxTime=dialogLastLocalMsg?dialogLastLocalMsg['time']:(new Date()).getTime()
+    index.openCursor(IDBKeyRange.bound([dialogKey,0],[dialogKey,maxTime]),'prev').onsuccess = function (event) {
         let cursor = event.target.result
         if(i>=limit || !cursor){
-            console.log(data)
             data.reverse()
             store.commit('setPrivateMsgList',{msg_list:data,type:type,target_id:targetId})
             return
@@ -115,7 +115,7 @@ function getLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
                 i+=item['total']
                 getOfflineMsgList({
                     user_id:targetId,
-                    id:item['msg_id'] || 0,
+                    max_id:item['msg_id'] || 0,
                     end_time:item['created_at'],
                     begin_time:item['begin_time'],
                     limit:item['total']-1,
@@ -162,7 +162,6 @@ function getDialogLastLocalMsg(msgList){
         let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
         let index = objectStore.index("time_uid")
         //同一用户发消息毫秒时间戳唯一  
-        console.log(msgList[0])
         index.openCursor(IDBKeyRange.only([msgList[0]['time'],msgList[0]['user_id']])).onsuccess = function (event) {
             let cursor = event.target.result
             if(cursor){
@@ -234,7 +233,7 @@ export function init() {
                 objectStore.createIndex('dialog_key', ['dialog_key','time'], { unique: false })
             }                                
             if (!db.objectStoreNames.contains('lately_dialog')) {
-                let objectStore = db.createObjectStore('lately_dialog',{autoIncrement: true})
+                db.createObjectStore('lately_dialog',{autoIncrement: true})
             }
         }
     })

@@ -7,9 +7,11 @@ export const NOT_KEEP_ALIVE_ROUTE=[
     'im-msgList',
 ]
 export const PER_LOAD_MSG_LIMIT=20  //私聊界面单次加载消息数量
-export const MSG_MAX_RETRY_TIME=15000 //失败消息最大重试时间
 export function getToken() {
     return localStorage.getItem("im:access_token")
+}
+export function setToken(token) {
+    return localStorage.setItem("im:access_token",token)
 }
 export function logout(){
     localStorage.removeItem('im:access_token')

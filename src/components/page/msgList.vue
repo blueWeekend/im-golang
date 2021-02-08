@@ -55,8 +55,7 @@
         methods: {
             onItemClick(typeAndTargetId) {
                 let arr=typeAndTargetId.split('-')
-                
-                this.$router.push('/home/friendList/dialog/'+arr[1]+'/'+SRC_MAP.FRIEND)
+                this.$router.push('/home/friendList/dialog/'+arr[1]+'/'+arr[0])
             },
             formatTime,
         },

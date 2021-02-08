@@ -50,7 +50,7 @@
                 id: 0,
                 chatContent: '',
                 list:[],
-                friendId:'',
+                targetId:'',
                 srcType:'',
                 msgKey:'',
                 nickname:'',
@@ -61,33 +61,33 @@
             }
         },
         created() {
+            console.log(1)
+            this.alterScrollTop()
             communicate.$on('alterScrollTop', () => {
                 this.alterScrollTop()
             })
-            this.friendId=parseInt(this.$route.params.friendId)
+            this.targetId=parseInt(this.$route.params.targetId)
             this.srcType=this.$route.params.srcType
-            this.msgKey=this.srcType+'-'+this.friendId
+            this.msgKey=this.srcType+'-'+this.targetId
             if(this.$store.state.isInit){
                 this.init()
             }
-          
         },
         methods: {
             init(){
-                this.nickname=this.$store.state.friendList[this.friendId]['nickname']
+                this.nickname=this.$store.state.friendList[this.targetId]['nickname']
                 //vue双向绑定需初始化
                 let msg={
                     src_type:this.srcType,
-                    target_id  :this.friendId,
+                    target_id  :this.targetId,
                     content:'',
                     is_self:1
                 }
                 this.$store.commit('pushMsg',msg)
                 if(!this.$store.state.isInitPrivateMsgMap.hasOwnProperty(this.msgKey)){
-                    setPrivateMsgList(this.srcType,this.friendId)
+                    setPrivateMsgList(this.srcType,this.targetId)
                     this.$store.commit('finishPrivateMsgInit',this.msgKey)
                 }
-                
             },
             getItem(id) {
                 return {
@@ -102,14 +102,14 @@
             },
             sendMsg() {
                 //毫秒时间戳
-                let curTime=new Date().getTime()
+                let curTime=(new Date()).getTime()
                 let msg={
                     event:EVENT_MAP.MSG,
                     user_id:this.$store.state.userInfo['user_id'],
                     src_type:SRC_MAP.FRIEND,
                     cnt_type:CNT_MAP.TEXT,
                     content:this.chatContent,
-                    target_id:this.friendId,
+                    target_id:this.targetId,
                     time:curTime,
                     is_self:1
                 }
@@ -121,7 +121,11 @@
                 this.alterScrollTop()  
             },
             alterScrollTop(){
+                
                 this.$nextTick(() => {
+                    if(!this.$refs.list){
+                        return
+                    }
                     this.$refs.list.scrollTop = this.$refs.list.scrollHeight
                     this.$refs.msg.focus()
                 })

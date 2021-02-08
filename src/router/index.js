@@ -16,7 +16,7 @@ const router=new Router({
       meta:1,
       children: [
         {
-          path: '/home/friendList/dialog/:friendId/:srcType',
+          path: '/home/friendList/dialog/:targetId/:srcType',
           component: () => import('@/components/page/dialog.vue'),
           meta:3,
         },

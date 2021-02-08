@@ -15,11 +15,13 @@
 <script>
     import bottom from '@/components/common/bottom'
     import {getUserInfo,getWsConnect} from '@/api/user'
-    import {getToken,logout,EVENT_MAP,NOT_KEEP_ALIVE_ROUTE,MSG_STATUS_MAP,MSG_MAX_RETRY_TIME} from '@/utils/global'
+    import {getToken,logout,EVENT_MAP,NOT_KEEP_ALIVE_ROUTE,MSG_STATUS_MAP} from '@/utils/global'
     import {saveLatelyDialog,setLatelyDialog,init as openLocalDb} from '@/components/store/indexedDb'
     import communicate from '@/utils/communicate'
-    const RETRAY_RATE=3000
+    const HEART_WAIT=3000
+    const RETRY_RATE=1000
     const HEART_RATE=60000
+    const MSG_MAX_RETRY_TIME=5000 //失败消息最大重试时间
     export default {
         data() {
             return {
@@ -39,31 +41,29 @@
             window.onbeforeunload=()=>{
                 saveLatelyDialog()
             }
-            communicate.$on('setSocket', (token) => {
-                this.token=token
-                this.setSocket()
+            communicate.$on('onLogin', (data) => {
+                this.token=data.access_token
+                this.init(data)
             })
-             communicate.$on('setLastOfflineMsg', (data) => {
-                this.setLastOfflineMsg(data)
-            })
-            this.token=getToken()
-            if(!this.token){
-                return
-            }
             communicate.$on('pushWaitAckMsg', (data) => {
                 data.event=EVENT_MAP.RETRY
                 this.waitAckMsgList.push(data)
                 if(this.ackMsgListTimer){
                     return
                 }
-                this.ackMsgListTimer=setTimeout(this.filterWaitAckMsgList, RETRAY_RATE)
+                this.ackMsgListTimer=setTimeout(this.filterWaitAckMsgList, RETRY_RATE)
             })
+            this.token=getToken()
+            if(!this.token){
+                return
+            }
             getUserInfo().then(data=>{
                 this.init(data)
             })
         },
         methods: {
              init(data){
+                //data.lately_dialog.length>0?this.setLastOfflineMsg(data.lately_dialog[0]):null
                 this.setSocket()
                 this.$store.commit('setUserInfo',data.user_info)
                 this.$store.commit('setFriendList',data.friend_list)
@@ -72,7 +72,7 @@
                         this.$store.commit('finishInit')
                     })
                 })
-                data.lately_dialog.length>0?this.setLastOfflineMsg(data.lately_dialog[0]):null
+                data.lately_dialog.length>0?this.setLastOfflineMsg(data.lately_dialog[0]):null     
             },
             setLastOfflineMsg(data){
                 let ackMsg={
@@ -111,7 +111,7 @@
                         this.$store.state.socket.send(JSON.stringify(this.waitAckMsgList[i]))
                     }
                 }
-                setTimeout(this.filterWaitAckMsgList, RETRAY_RATE)
+                setTimeout(this.filterWaitAckMsgList, RETRY_RATE)
             },
             remWaitAckMsgList(time){
                 let left=0
@@ -197,7 +197,7 @@
                     this.reConnectTimer=setTimeout(()=>{
                         this.$store.state.socket.close()
                         this.reConnect()
-                    },RETRAY_RATE)
+                    },HEART_WAIT)
                 },HEART_RATE)
             },
             reConnect(){

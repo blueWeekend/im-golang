@@ -16,9 +16,8 @@
 </template>
 
 <script>
-    import {loginByPwd,getWsConnect} from '@/api/user'
-    import {getToken} from '@/utils/global'
-    import {setLatelyDialog,init as openLocalDb} from '@/components/store/indexedDb'
+    import {loginByPwd} from '@/api/user'
+    import {setToken} from '@/utils/global'
     import communicate from '@/utils/communicate'
     export default {
         data() {
@@ -33,28 +32,15 @@
 
         },
         methods: {
-            login(){
-                localStorage.userInfo=1
-                let path=this.$route.query.redirect || '/home/msgList'
-                this.$router.push(path)
+            loginByCode(){
+                
             },
             loginByPwd(){
-                //this.$router.push('/home')
                 loginByPwd({email:this.email,password:this.password}).then(data=>{
-                    localStorage.setItem("im:access_token",data.access_token)
-                    communicate.$emit('setSocket',data.access_token)
-                    data.lately_dialog.length>0?communicate.$emit('setLastOfflineMsg',data.lately_dialog[0]):null
-                    this.$store.commit('setUserInfo',data.user_info)
-                    this.$store.commit('setFriendList',data.friend_list)
-                    openLocalDb().then(()=>{
-                        setLatelyDialog(data.lately_dialog).then(()=>{
-                            this.$store.commit('finishInit')
-                            let path=this.$route.query.redirect || '/home/msgList'
-                            this.$router.push(path)
-                        })
-                    })
-                    
-
+                    setToken(data.access_token)
+                    let path=this.$route.query.redirect || '/home/msgList'
+                    this.$router.push(path)
+                    communicate.$emit('onLogin',data)
                 })
             }
         }

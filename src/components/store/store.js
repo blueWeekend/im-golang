@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import {MSG_STATUS_MAP} from '@/utils/global'
 import {addMsg,confirmMsgStatus} from '@/components/store/indexedDb'
+import communicate from '@/utils/communicate'
 Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
@@ -138,7 +139,9 @@ const store = new Vuex.Store({
             let key=payload['type']+'-'+payload['target_id']
             payload['msg_list'].push(...state.latelyMsgList[key])
             state.latelyMsgList[key]=payload['msg_list']
-            
+            if(state.isInitPrivateMsgMap[key]){
+                communicate.$emit('alterScrollTop')
+            }
         },
         setShowBottomFlag(state, payload) {
             state.isShowBottom = payload
