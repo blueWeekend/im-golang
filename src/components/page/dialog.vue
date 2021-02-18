@@ -61,7 +61,6 @@
             }
         },
         created() {
-            console.log(1)
             this.alterScrollTop()
             communicate.$on('alterScrollTop', () => {
                 this.alterScrollTop()

@@ -1,6 +1,6 @@
 import store from '@/components/store/store'
 import {getOfflineMsgList} from '@/api/user'
-import {PER_LOAD_MSG_LIMIT,SRC_MAP} from '@/utils/global'
+import {PER_LOAD_MSG_LIMIT,SRC_MAP,MSG_STATUS_MAP} from '@/utils/global'
 let dbHandle = indexedDB || webkitIndexedDB || mozIndexedDB || null
 let db = null
 export function addMsg(data) {
@@ -23,6 +23,7 @@ export function confirmMsgStatus(time, userId,status) {
             let data=cursor.value
             data.status=status
             objectStore.put(data)
+            saveLatelyDialog(true)
         }
         
         
@@ -41,14 +42,17 @@ function alterMsgById(id,obj){
         } 
     })
 }
-export function saveLatelyDialog(){
+export function saveLatelyDialog(isConfirmStatus=false){//消息变动调用。仅beforeunload调用时有时捕获不到导致最新本地消息显示有误
     if (!db) return
     let list=[]
     for(let item of store.state.latelyMsgIndex){
         let data={}
         let len=store.state.latelyMsgList[item].length
         if(len>0){
-            data=store.state.latelyMsgList[item][len-1]
+            data={...store.state.latelyMsgList[item][len-1]}
+            if(!isConfirmStatus){
+                data['status']=MSG_STATUS_MAP.FAIL
+            }
         }
         list.push({
             src_type_target_id:item,
@@ -71,7 +75,10 @@ export function setPrivateMsgList(type,targetId,limit=PER_LOAD_MSG_LIMIT){
 }
 function getLastActiveTime(){
     return new Promise((resolve, reject) => {
-        if (!db) resolve(0)
+        if (!db){
+            resolve(0)
+            return
+        } 
         let transaction = db.transaction(["lately_dialog"],"readwrite")
         let objectStore = transaction.objectStore("lately_dialog")
         let request = objectStore.get(1)
@@ -118,7 +125,7 @@ function setLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
                     max_id:item['msg_id'] || 0,
                     end_time:item['created_at'],
                     begin_time:item['begin_time'],
-                    limit:item['total']-1,
+                    limit:item['total']-1,//todo 当limit较大优化为分页请求
                 }).then(offlineMsgList=>{
                     for(let _item of offlineMsgList){
                         _item['msg_id']=_item['id']
@@ -165,8 +172,9 @@ function getDialogLastLocalMsg(msgList){
         index.openCursor(IDBKeyRange.only([msgList[0]['time'],msgList[0]['user_id']])).onsuccess = function (event) {
             let cursor = event.target.result
             if(cursor){
-                let key=cursor.value.user_id<cursor.value.target_id?cursor.value.user_id+'-'+cursor.value.target_id:cursor.value.target_id+'-'+cursor.value.user_id
-                resolve({'dialog_key':key,'time':cursor.value.time,'id':cursor.value.id})
+                let item=cursor.value
+                let key=item.user_id<item.target_id?item.user_id+'-'+item.target_id:item.target_id+'-'+item.user_id
+                resolve({'dialog_key':key,'time':item.time,'id':item.id})
             }else{
                 resolve(false)
             }
@@ -206,6 +214,36 @@ export function setLatelyDialog(newDialog){
         }
     })
     
+}
+function getLatelyDialog(arr){
+    return new Promise((resolve, reject)=>{
+        let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
+        let index = objectStore.index("dialog_key")
+        let res=[]
+        for(let i in arr){
+            if(arr[i]['time']==0){
+                continue
+            }
+            let data=false
+            let typeAndTargetId=arr[i]['src_type_target_id'].split('-')
+            //todo加入群聊逻辑
+            let dialogKey=store.state.userInfo['user_id']<typeAndTargetId[1]?store.state.userInfo['user_id']+'-'+typeAndTargetId[1]:typeAndTargetId[1]+'-'+store.state.userInfo['user_id']
+            index.openCursor(IDBKeyRange.only([dialogKey,arr[i]['time']])).onsuccess = function (event) {
+                let cursor = event.target.result
+                if(cursor){
+                    let value=cursor.value
+                    if(!data || value.id>data.id){
+                       data=value
+                    }
+                    cursor.continue()
+                }else{
+                    //res.push({...arr[i],...data})
+                    arr[i]={...arr[i],...data}
+                }
+            }
+        }
+        
+    })
 }
 export function init() {
     return new Promise((resolve, reject) => {

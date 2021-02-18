@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {MSG_STATUS_MAP} from '@/utils/global'
-import {addMsg,confirmMsgStatus} from '@/components/store/indexedDb'
+import {addMsg,confirmMsgStatus,saveLatelyDialog} from '@/components/store/indexedDb'
 import communicate from '@/utils/communicate'
 Vue.use(Vuex)
 const store = new Vuex.Store({
@@ -64,6 +64,7 @@ const store = new Vuex.Store({
                             state.latelyMsgIndex[j]=state.latelyMsgIndex[j-1]
                         }
                         state.latelyMsgIndex[0]=key
+                        saveLatelyDialog()
                         return
                     }
                 }
@@ -77,6 +78,7 @@ const store = new Vuex.Store({
                     }
                     addMsg({...payload,status:MSG_STATUS_MAP.FAIL})
                     Vue.set(state.latelyMsgList, key, [msg])
+                    saveLatelyDialog()
                 }else{
                     Vue.set(state.latelyMsgList, key,[])
                 }

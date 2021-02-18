@@ -16,7 +16,7 @@
     import bottom from '@/components/common/bottom'
     import {getUserInfo,getWsConnect} from '@/api/user'
     import {getToken,logout,EVENT_MAP,NOT_KEEP_ALIVE_ROUTE,MSG_STATUS_MAP} from '@/utils/global'
-    import {saveLatelyDialog,setLatelyDialog,init as openLocalDb} from '@/components/store/indexedDb'
+    import {setLatelyDialog,init as openLocalDb} from '@/components/store/indexedDb'
     import communicate from '@/utils/communicate'
     const HEART_WAIT=3000
     const RETRY_RATE=1000
@@ -38,9 +38,6 @@
             }
         },
         created() {
-            window.onbeforeunload=()=>{
-                saveLatelyDialog()
-            }
             communicate.$on('onLogin', (data) => {
                 this.token=data.access_token
                 this.init(data)
