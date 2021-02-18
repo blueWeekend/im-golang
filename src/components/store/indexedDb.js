@@ -42,7 +42,7 @@ function alterMsgById(id,obj){
         } 
     })
 }
-export function saveLatelyDialog(isConfirmStatus=false){//消息变动调用。仅beforeunload调用时有时捕获不到导致最新本地消息显示有误
+export function saveLatelyDialog(isConfirmStatus=false){//消息变动则调用。仅beforeunload调用有时捕获不到导致最新本地消息显示有误
     if (!db) return
     let list=[]
     for(let item of store.state.latelyMsgIndex){
@@ -141,7 +141,6 @@ function setLocalPrivateMsgList(type,targetId,dialogLastLocalMsg,limit){
                     store.commit('setPrivateMsgList',{msg_list:data,type:type,target_id:targetId})
                     store.commit('alterMsgNum',{
                         key:type+'-'+targetId,
-                        offline_msg_num:0,
                         not_read_msg_num:0
                     })
                     delete item['total']

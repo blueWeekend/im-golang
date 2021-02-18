@@ -87,7 +87,6 @@ const store = new Vuex.Store({
            
         },
         alterMsgNum(state,payload){
-            state.msgNumMap[payload['key']]['offline_msg_num']=payload['offline_msg_num']
             state.msgNumMap[payload['key']]['not_read_msg_num']=payload['not_read_msg_num']
         },
         confirmMsgStatus(state, payload){
@@ -121,7 +120,7 @@ const store = new Vuex.Store({
             for(let item of payload['new_dialog']){
                 state.offlineMsgNumMap
                 let key=item['src_type']+'-'+item['user_id']
-                Vue.set(state.msgNumMap, key,{'offline_msg_num':item['total'],'not_read_msg_num':item['total']})
+                Vue.set(state.msgNumMap, key,{'not_read_msg_num':item['total']})
                 state.latelyMsgIndex.push(key)
                 Vue.set(state.latelyMsgList, key, [item])
             }
@@ -129,7 +128,7 @@ const store = new Vuex.Store({
                 if(state.latelyMsgList[item['src_type_target_id']]){
                     continue
                 }
-                Vue.set(state.msgNumMap, item['src_type_target_id'],{'offline_msg_num':0,'not_read_msg_num':0})
+                Vue.set(state.msgNumMap, item['src_type_target_id'],{'not_read_msg_num':0})
                 state.latelyMsgIndex.push(item['src_type_target_id'])
                 Vue.set(state.latelyMsgList, item['src_type_target_id'], item.content?[item]:[])
             }
