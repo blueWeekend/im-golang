@@ -35,6 +35,11 @@ const router=new Router({
           component: () => import('@/components/page/login.vue'),
           meta:2,
         },
+        {
+          path: '/home/nearby',
+          component: () => import('@/components/page/nearby.vue'),
+          meta:{isShowBottom:true},
+        },
       ]
     }
   ]

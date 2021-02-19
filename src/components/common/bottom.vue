@@ -19,21 +19,18 @@
                     icon: 'cubeic-person',
                     value:'friendList'
                 }, {
-                    label: '我',
-                    icon: 'cubeic-person',
-                    value:'me'
+                    label: '附近的人',
+                    icon: 'cubeic-location',
+                    value:'nearby'
                 }]
             }
         },
         created(){
-            let route=this.$route.path
-        
-            // this.selectedLabel=route.split('/')[2]
+            
 
         },
         methods: {
             changeHandler(label) {
-                // if you clicked different tab, this methods can be emitted
                 this.$router.push('/home/'+label)
             }
         }

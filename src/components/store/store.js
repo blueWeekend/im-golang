@@ -14,7 +14,7 @@ const store = new Vuex.Store({
         bottomLabel:'msgList',
         friendList:{},
         socket:null,
-        msgNumMap:{},//未读消息与离线消息数量
+        msgNumMap:{},
         isInitPrivateMsgMap:{}
     },
     mutations: {

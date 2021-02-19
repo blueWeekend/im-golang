@@ -1,5 +1,6 @@
 <template>
     <div class="main">
+        <header></header>
         <transition :name="transitionName" mode="out-in">
             <keep-alive :exclude="NOT_KEEP_ALIVE_ROUTE">
                 <router-view class="position-div"></router-view>
@@ -14,6 +15,7 @@
 
 <script>
     import bottom from '@/components/common/bottom'
+    import header from '@/components/common/header'
     import {getUserInfo,getWsConnect} from '@/api/user'
     import {getToken,logout,EVENT_MAP,NOT_KEEP_ALIVE_ROUTE,MSG_STATUS_MAP} from '@/utils/global'
     import {setLatelyDialog,init as openLocalDb} from '@/components/store/indexedDb'

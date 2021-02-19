@@ -13,11 +13,10 @@
             ]
         }
     ]
-
     export default {
         data() {
             return {
-                title: '通讯录',
+                title: '附近的人',
                 listData: listData
             }
         },
@@ -29,7 +28,6 @@
         methods: {
             init(){
                 let data=this.$store.state.friendList
-                
                 let arr=[]
                 for(let i in data){
                     arr.push({
@@ -38,6 +36,25 @@
                     })
                 }
                 this.listData[0].items=arr
+
+                if (navigator.geolocation){
+            　　　　navigator.geolocation.getCurrentPosition(loc=>{
+                       console.log(loc)
+                    },e=>{
+                        console.log('error',e)
+                    })
+            　　}else{
+                    console.log(111)
+                }
+            },
+            getLocation(loc){
+                console.log(1)
+                const location = {
+                    latitude: loc.coords.latitude,  // 纬度
+                    longitude: loc.coords.longitude,  // 经度
+                    accuracy: loc.coords.accuracy // 精确度
+                }
+                console.log(location)
             },
             selectItem(item) {
                 this.$router.push('/home/friendList/dialog/'+item.value+'/'+SRC_MAP.FRIEND)
@@ -50,7 +67,7 @@
             "$store.state.isInit":function(val){
                 if(val){
                     this.init()
-                } 
+                }  
             }
             
         }

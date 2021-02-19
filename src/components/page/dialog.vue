@@ -1,18 +1,5 @@
 <template>
     <div style="height:100%">
-        <!-- <cube-recycle-list class="list" :size="size" :on-fetch="onFetch" :offset="offset">
-            <template slot="item" slot-scope="{ data }">
-                <div :id="data.id" class="item" @click="handleClick(data)">
-                    <div class="avatar" :style="{backgroundImage: 'url(' + (data.avatar || '') + ')'}"></div>
-                    <div class="bubble">
-                        <p>{{ data.msg }}</p>
-                        <div class="meta">
-                            <time class="posted-date">{{ data.time }}</time>
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </cube-recycle-list> -->
         <header><i class="cubeic-back" @click="back()"></i>&nbsp;&nbsp;&nbsp;{{nickname}}</header>
         <div class="list" ref="list">  
             <div v-for="(data,index) in $store.state.latelyMsgList[msgKey]" :key="index" :class="dialogClass[data.is_self]" @click="handleClick(data)">
@@ -136,10 +123,9 @@
         },
         watch:{
             "$store.state.isInit":function(val){
-                if(!val){
-                    return
-                }
-                this.init()
+                if(val){
+                    this.init()
+                } 
             }
             
         }
