@@ -1,5 +1,5 @@
 <template>
-    <div style="text-align:center;height:30px;backgroud-color:black">
+    <div style="text-align:center;height:30px;background-color:black">
         <span>im</span>
         <i class="cubeic-add"></i>
     </div>
