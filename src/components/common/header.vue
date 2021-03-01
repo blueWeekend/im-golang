@@ -1,16 +1,17 @@
 <template>
-    <div style="text-align:center;height:30px;background-color:black">
-        <span>im</span>
-        <i class="cubeic-add"></i>
+    <div style="text-align:center;height:36px;line-height: 36px;background-color: #f7f7f7;">
+        <span>{{tab[$store.state.bottomLabel]['label']}}</span>
+        <i class="cubeic-more" style="float: right;margin-right: 12px;"></i>
     </div>
 </template>
 
 <script>
+    import {COMMON_UNIT_TAB} from '@/utils/global'
     export default {
-
+        
         data() {
             return {
-               
+               tab:COMMON_UNIT_TAB
             }
         },
         created(){
@@ -18,10 +19,7 @@
 
         },
         methods: {
-            changeHandler(label) {
-                // if you clicked different tab, this methods can be emitted
-                this.$router.push('/home/'+label)
-            }
+            
         }
     }
 </script>

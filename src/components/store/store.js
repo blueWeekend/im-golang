@@ -10,7 +10,7 @@ const store = new Vuex.Store({
         userInfo:{},
         latelyMsgList: {},
         latelyMsgIndex:[],
-        isShowBottom: true,
+        isShowCommonUnit: true,
         bottomLabel:'msgList',
         friendList:{},
         socket:null,
@@ -141,8 +141,8 @@ const store = new Vuex.Store({
                 communicate.$emit('alterScrollTop')
             }
         },
-        setShowBottomFlag(state, payload) {
-            state.isShowBottom = payload
+        setShowCommonUnitFlag(state, payload) {
+            state.isShowCommonUnit = payload
         },
         setBottomLabel(state, payload) {
             state.bottomLabel = payload

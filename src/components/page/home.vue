@@ -1,12 +1,12 @@
 <template>
     <div class="main">
-        <Header></Header>
+        <Header v-show="$store.state.isShowCommonUnit"></Header>
         <transition :name="transitionName" mode="out-in">
             <keep-alive :exclude="NOT_KEEP_ALIVE_ROUTE">
                 <router-view class="position-div"></router-view>
             </keep-alive>
         </transition>
-        <footer v-show="$store.state.isShowBottom">
+        <footer v-show="$store.state.isShowCommonUnit">
             <bottom></bottom>
         </footer>
     </div>
@@ -217,12 +217,6 @@
         },
         // watch: {
         //     $route(to, from) {
-        //         let arr=to.path.split('/')
-        //         if(arr[arr.length-1]=='msgList' || arr[arr.length-1]=='friendList'){
-        //             this.$store.commit('setShowBottomFlag', true)
-        //         }else{
-        //             this.$store.commit('setShowBottomFlag', false)
-        //         }
         //         if (to.meta > from.meta) {
         //             this.transitionName = "slide-left"
         //         } else {

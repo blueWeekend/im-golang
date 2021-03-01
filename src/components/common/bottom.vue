@@ -6,23 +6,12 @@
 </template>
 
 <script>
+    import {COMMON_UNIT_TAB} from '@/utils/global'
     export default {
 
         data() {
             return {
-                tabs: [{
-                    label: '消息',
-                    icon: 'cubeic-message',
-                    value:'msgList'
-                }, {
-                    label: '通讯录',
-                    icon: 'cubeic-person',
-                    value:'friendList'
-                }, {
-                    label: '附近的人',
-                    icon: 'cubeic-location',
-                    value:'nearby'
-                }]
+                tabs: Object.values(COMMON_UNIT_TAB)
             }
         },
         created(){

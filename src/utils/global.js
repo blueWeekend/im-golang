@@ -6,6 +6,23 @@ export const NOT_KEEP_ALIVE_ROUTE=[
     'im-dialog',
     'im-msgList',
 ]
+export const COMMON_UNIT_TAB={
+    'msgList':{
+        label: '消息',
+        icon: 'cubeic-message',
+        value:'msgList'
+    }, 
+    'friendList':{
+        label: '通讯录',
+        icon: 'cubeic-person',
+        value:'friendList'
+    }, 
+    'nearby':{
+        label: '附近的人',
+        icon: 'cubeic-location',
+        value:'nearby'
+    }
+}
 export const PER_LOAD_MSG_LIMIT=20  //私聊界面单次加载消息数量
 export function getToken() {
     return localStorage.getItem("im:access_token")

@@ -23,12 +23,16 @@ const router=new Router({
         {
           path: '/home/friendList',
           component: () => import('@/components/page/friendList.vue'),
-          meta:{isShowBottom:true},
+          meta:{
+            isShowCommonUnit:true,
+          },
         },
         {
           path: '/home/msgList',
           component: () => import('@/components/page/msgList.vue'),
-          meta:{isShowBottom:true},
+          meta:{
+            isShowCommonUnit:true,
+          },
         },
         {
           path: '/home/login',
@@ -38,7 +42,9 @@ const router=new Router({
         {
           path: '/home/nearby',
           component: () => import('@/components/page/nearby.vue'),
-          meta:{isShowBottom:true},
+          meta:{
+            isShowCommonUnit:true,
+          },
         },
       ]
     }
@@ -59,7 +65,7 @@ router.beforeEach((to, from, next) => {
     return
   }
   let routeArr=to.path.split('/').filter(str=>{return !!str})
-  store.commit('setShowBottomFlag', to.meta.isShowBottom===true?true:false)
+  store.commit('setShowCommonUnitFlag', to.meta.isShowCommonUnit===true?true:false)
   let bottomLabel=routeArr[1]
   store.commit('setBottomLabel',bottomLabel)
   if(routeArr[routeArr.length-1]=='home'){
