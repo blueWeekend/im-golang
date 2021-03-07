@@ -62,7 +62,7 @@
         methods: {
             init(){
                 this.nickname=this.$store.state.friendList[this.targetId]['nickname']
-                //vue双向绑定需初始化
+                //vue双向绑定数组需初始化
                 let msg={
                     src_type:this.srcType,
                     target_id  :this.targetId,

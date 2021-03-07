@@ -10,7 +10,8 @@ const store = new Vuex.Store({
         userInfo:{},
         latelyMsgList: {},
         latelyMsgIndex:[],
-        isShowCommonUnit: true,
+        isShowHeader: true,
+        isShowBottom: true,
         bottomLabel:'msgList',
         friendList:{},
         socket:null,
@@ -142,7 +143,8 @@ const store = new Vuex.Store({
             }
         },
         setShowCommonUnitFlag(state, payload) {
-            state.isShowCommonUnit = payload
+            state.isShowHeader = payload['isShowHeader']
+            state.isShowBottom = payload['isShowBottom']
         },
         setBottomLabel(state, payload) {
             state.bottomLabel = payload

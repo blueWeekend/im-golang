@@ -33,6 +33,20 @@
         data() {
             return {
                 avatar:require('./avatar.png'),
+                swipeData: [{
+                        text: '测试1',
+                        avatar: require('./avatar.png'),
+                        value: 1
+                    }, {
+                        text: '测试2',
+                        avatar: require('./avatar.png'),
+                        value: 2
+                    }, {
+                        text: '测试3',
+                        avatar: require('./avatar.png'),
+                        value: 3
+                    }
+                ]
             }
         },
         created(){

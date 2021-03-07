@@ -5,9 +5,10 @@
 
 <script>
     import {SRC_MAP} from '@/utils/global'
+    import chinesePy from '@/utils/chinesePy'
     const listData = [
         {
-            "name": "A",
+            "name": "我的好友",
             "items": [
                
             ]
@@ -17,7 +18,7 @@
     export default {
         data() {
             return {
-                title: '通讯录',
+                title: '新的朋友',
                 listData: listData
             }
         },
@@ -25,19 +26,48 @@
             if(this.$store.state.isInit){
                 this.init()
             }
+        
         },
         methods: {
             init(){
-                let data=this.$store.state.friendList
-                
-                let arr=[]
-                for(let i in data){
-                    arr.push({
-                        'name':data[i]['nickname'],
-                        'value':data[i]['friend_id']
-                    })
+                let friendList=this.$store.state.friendList
+                let data={}
+                for(let i in friendList){
+                    let code=chinesePy.GetJP(friendList[i]['nickname'][0])
+                    if(!isNaN(code)){
+                        code='#'
+                    }
+                    if(data[code]){
+                        data[code]['items'].push({
+                            'name':friendList[i]['nickname'],
+                            'value':friendList[i]['friend_id']
+                        })
+                    }else{
+                        data[code]={
+                            "name": code,
+                            "items": [
+                                {
+                                    'name':friendList[i]['nickname'],
+                                    'value':friendList[i]['friend_id']
+                                }
+                            ]
+                        }
+                    }
                 }
-                this.listData[0].items=arr
+                let arr=[]
+                for (var i = 0; i < 26; i++) {
+                    let code=String.fromCharCode((65 + i))
+                    if(data[code]){
+                        arr.push(data[code])
+                    }
+                }
+                if(data['#']){
+                    data['#']['items'].sort((a,b)=>{
+                        return a['name']>b['name']?1:-1
+                    })
+                    arr.push(data['#'])
+                }
+                this.listData=arr
             },
             selectItem(item) {
                 this.$router.push('/home/friendList/dialog/'+item.value+'/'+SRC_MAP.FRIEND)

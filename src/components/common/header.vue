@@ -1,6 +1,6 @@
 <template>
     <div style="text-align:center;height:36px;line-height: 36px;background-color: #f7f7f7;">
-        <span>{{tab[$store.state.bottomLabel]['label']}}</span>
+        <span>{{tab[$store.state.bottomLabel]?tab[$store.state.bottomLabel]['label']:''}}</span>
         <i class="cubeic-more" style="float: right;margin-right: 12px;"></i>
     </div>
 </template>
@@ -16,7 +16,6 @@
         },
         created(){
             
-
         },
         methods: {
             

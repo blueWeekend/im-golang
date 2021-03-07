@@ -18,32 +18,43 @@ const router=new Router({
         {
           path: '/home/friendList/dialog/:targetId/:srcType',
           component: () => import('@/components/page/dialog.vue'),
-          meta:3,
+          meta:{},
         },
         {
           path: '/home/friendList',
           component: () => import('@/components/page/friendList.vue'),
           meta:{
-            isShowCommonUnit:true,
+            isShowHeader:true,
+            isShowBottom:true,
           },
         },
         {
           path: '/home/msgList',
           component: () => import('@/components/page/msgList.vue'),
           meta:{
-            isShowCommonUnit:true,
+            isShowHeader:true,
+            isShowBottom:true,
           },
         },
         {
           path: '/home/login',
           component: () => import('@/components/page/login.vue'),
-          meta:2,
+          meta:{},
         },
         {
           path: '/home/nearby',
           component: () => import('@/components/page/nearby.vue'),
           meta:{
-            isShowCommonUnit:true,
+            isShowHeader:true,
+            isShowBottom:true,
+          },
+        },
+        {
+          path: '/home/newFriendList',
+          component: () => import('@/components/page/newFriendList.vue'),
+          meta:{
+            isShowHeader:true,
+            isShowBottom:false,
           },
         },
       ]
@@ -65,7 +76,7 @@ router.beforeEach((to, from, next) => {
     return
   }
   let routeArr=to.path.split('/').filter(str=>{return !!str})
-  store.commit('setShowCommonUnitFlag', to.meta.isShowCommonUnit===true?true:false)
+  store.commit('setShowCommonUnitFlag', to.meta)
   let bottomLabel=routeArr[1]
   store.commit('setBottomLabel',bottomLabel)
   if(routeArr[routeArr.length-1]=='home'){

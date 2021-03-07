@@ -1,12 +1,12 @@
 <template>
     <div class="main">
-        <Header v-show="$store.state.isShowCommonUnit"></Header>
+        <Header v-show="$store.state.isShowHeader"></Header>
         <transition :name="transitionName" mode="out-in">
             <keep-alive :exclude="NOT_KEEP_ALIVE_ROUTE">
                 <router-view class="position-div"></router-view>
             </keep-alive>
         </transition>
-        <footer v-show="$store.state.isShowCommonUnit">
+        <footer v-show="$store.state.isShowBottom">
             <bottom></bottom>
         </footer>
     </div>
