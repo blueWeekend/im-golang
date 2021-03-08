@@ -214,7 +214,7 @@ export function setLatelyDialog(newDialog){
     })
     
 }
-function getLatelyDialog(arr){
+function getLatelyDialog(arr){//已废弃
     return new Promise((resolve, reject)=>{
         let objectStore = db.transaction(["private_msg"], "readwrite").objectStore('private_msg')
         let index = objectStore.index("dialog_key")

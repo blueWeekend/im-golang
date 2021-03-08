@@ -1,7 +1,7 @@
 <template>
-    <div style="text-align:center;height:36px;line-height: 36px;background-color: #f7f7f7;">
+    <div style="text-align:center;height:36px;line-height: 36px;background-color: #f7f7f7;position: relative;">
         <span>{{tab[$store.state.bottomLabel]?tab[$store.state.bottomLabel]['label']:''}}</span>
-        <span @click="" style="float: right;margin-right: 12px;position: absolute">添加朋友</span>
+        <span @click="showAlert" style="position: absolute;right: 10px;">添加朋友</span>
     </div>
 </template>
 
@@ -18,7 +18,23 @@
             
         },
         methods: {
-            
+            showAlert() {
+                this.dialog = this.$createDialog({
+                        type: 'prompt',
+                        title: '添加朋友',
+                        prompt: {
+                        value: '',
+                        placeholder: '请输入邮箱'
+                    },
+                    onConfirm: (e, value) => {
+                        this.$createToast({
+                            type: 'warn',
+                            time: 1000,
+                            txt: `Prompt value: ${value || ''}`
+                        }).show()
+                    }
+                }).show()
+            }
         }
     }
 </script>
