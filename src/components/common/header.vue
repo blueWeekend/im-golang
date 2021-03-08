@@ -1,7 +1,7 @@
 <template>
     <div style="text-align:center;height:36px;line-height: 36px;background-color: #f7f7f7;">
         <span>{{tab[$store.state.bottomLabel]?tab[$store.state.bottomLabel]['label']:''}}</span>
-        <i class="cubeic-more" style="float: right;margin-right: 12px;"></i>
+        <span @click="" style="float: right;margin-right: 12px;position: absolute">添加朋友</span>
     </div>
 </template>
 

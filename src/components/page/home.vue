@@ -231,10 +231,8 @@
 <style lang="stylus">
     .main {
         height: 100%;
-        width: 100%;
-        margin: 0 auto;
+        margin: 0;
         overflow: hidden;
-        position: absolute;
     }
 
     footer {
