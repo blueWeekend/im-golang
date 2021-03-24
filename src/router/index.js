@@ -57,6 +57,15 @@ const router=new Router({
             isShowBottom:false,
           },
         },
+        {
+          path: '/home/userInfo/:userId',
+          name:'userInfo',
+          component: () => import('@/components/page/userInfo.vue'),
+          meta:{
+            isShowHeader:false,
+            isShowBottom:false,
+          },
+        },
       ]
     }
   ]

@@ -7,6 +7,7 @@
 
 <script>
     import {COMMON_UNIT_TAB} from '@/utils/global'
+    import {GetUserPanel} from '@/api/user'
     export default {
         
         data() {
@@ -27,11 +28,14 @@
                         placeholder: '请输入邮箱'
                     },
                     onConfirm: (e, value) => {
-                        this.$createToast({
-                            type: 'warn',
-                            time: 1000,
-                            txt: `Prompt value: ${value || ''}`
-                        }).show()
+                        GetUserPanel({email:value}).then(data=>{
+                            this.$router.push({
+                                path:'/home/userInfo/'+data.user_id,
+                                params:{
+                                    userName:data.username
+                                }
+                            })
+                        })
                     }
                 }).show()
             }

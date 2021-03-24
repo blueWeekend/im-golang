@@ -153,9 +153,8 @@ const store = new Vuex.Store({
             state.userInfo=payload
         },
         setFriendList(state,payload){
-            //state.friendList=payload
             for(let item of payload){
-                state.friendList[item['friend_id']]=item
+                Vue.set(state.friendList, item['friend_id'], item)
             }
         }
 

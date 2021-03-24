@@ -264,8 +264,6 @@ export function init() {
             db = event.target.result
             if (!db.objectStoreNames.contains('private_msg')) {
                 let objectStore = db.createObjectStore('private_msg', { autoIncrement: true,keyPath: "id" })
-                // objectStore.createIndex('user_id', 'user_id', { unique: false })
-                // objectStore.createIndex('target_id', 'target_id', { unique: false })
                 objectStore.createIndex('time_uid', ['time','user_id'], { unique: true })
                 objectStore.createIndex('dialog_key', ['dialog_key','time'], { unique: false })
             }                                

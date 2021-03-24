@@ -24,3 +24,10 @@ export function getOfflineMsgList(data){
     data: data
   })
 }
+export function GetUserPanel(data){
+  return request({
+    url: 'user/GetUserPanel',
+    method: 'post',
+    data: data
+  })
+}

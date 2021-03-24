@@ -94,7 +94,7 @@
                 let curTime=new Date().getTime()
                 for(let i in this.waitAckMsgList){
                     if(curTime-this.waitAckMsgList[i]['time']>MSG_MAX_RETRY_TIME){
-                        //剔除掉15秒内没重发成功的消息
+                        //剔除掉5秒内没重发成功的消息
                         let msg={
                             user_id:this.waitAckMsgList[i]['user_id'],
                             src_type:this.waitAckMsgList[i]['src_type'],
@@ -174,6 +174,7 @@
                 }
             },
             onopen(){
+                console.log('ws open')
                 this.heart()
                 if(this.lastOfflineMsg){
                     this.$store.state.socket.send(JSON.stringify(this.lastOfflineMsg))
@@ -185,6 +186,7 @@
                 this.reConnect()
             },
             heart(){
+                console.log('heart')
                 this.heartTimer && clearTimeout(this.heartTimer)
                 this.reConnectTimer && clearTimeout(this.reConnectTimer)
                 this.heartTimer = setTimeout(()=>{
