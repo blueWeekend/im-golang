@@ -29,7 +29,6 @@
 <script>
     import {SRC_MAP,formatTime} from '@/utils/global'
     export default {
-        name:'im-msgList',
         data() {
             return {
                 avatar:require('./avatar.png'),

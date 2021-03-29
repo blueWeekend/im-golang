@@ -1,3 +1,4 @@
+import { Toast } from 'cube-ui'
 export const EVENT_MAP={NOT_LOGIN:401,PING:201,MSG:200,ACK:202,RETRY:203}
 export const SRC_MAP={FRIEND:1,GROUP:2}
 export const CNT_MAP={TEXT:1,MSG:2,FILE:3}
@@ -5,6 +6,7 @@ export const MSG_STATUS_MAP={SENDING:0,SUCCESS:1,FAIL:-1}
 export const NOT_KEEP_ALIVE_ROUTE=[
     'im-dialog',
     'im-msgList',
+    'im-userInfo',
 ]
 export const COMMON_UNIT_TAB={
     'msgList':{
@@ -49,5 +51,13 @@ export function formatTime (value) {
     let s = date.getSeconds();
     s = s < 10 ? "0" + s : s;
     return y + "-" + MM + "-" + d + " " + h + ":" + m;
+}
+export function toast(msg,type='correct'){
+    const toast = Toast.$create({
+        time: 1000,
+        type:type,
+        txt: msg
+      })
+      toast.show()
 }
 

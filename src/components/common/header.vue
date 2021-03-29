@@ -21,19 +21,16 @@
         methods: {
             showAlert() {
                 this.dialog = this.$createDialog({
-                        type: 'prompt',
-                        title: '添加朋友',
-                        prompt: {
+                    type: 'prompt',
+                    title: '添加朋友',
+                    prompt: {
                         value: '',
                         placeholder: '请输入邮箱'
                     },
                     onConfirm: (e, value) => {
                         GetUserPanel({email:value}).then(data=>{
                             this.$router.push({
-                                path:'/home/userInfo/'+data.user_id,
-                                params:{
-                                    userName:data.username
-                                }
+                                path:'/home/userInfo/'+data.user_id+'/'+data.username,
                             })
                         })
                     }

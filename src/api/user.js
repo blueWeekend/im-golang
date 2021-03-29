@@ -31,3 +31,10 @@ export function GetUserPanel(data){
     data: data
   })
 }
+export function relationApply(data){
+  return request({
+    url: 'user/relationApply',
+    method: 'post',
+    data: data
+  })
+}

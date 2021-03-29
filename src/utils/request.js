@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Toast } from 'cube-ui'
-import {logout} from '@/utils/global'
+import {logout,toast} from '@/utils/global'
 const CODE_OK = 200
 // if (process.env.NODE_ENV === 'production') {
 //   ConfigBaseURL = window.location.protocol + "//" + window.location.host
@@ -29,12 +29,7 @@ Service.interceptors.response.use(response => {
   if (res.code === CODE_NOT_LOGIN) {
     logout()
   }  else if (res.code !== CODE_OK) {
-    const toast = Toast.$create({
-      time: 1000,
-      type:'error',
-      txt: res.msg
-    })
-    toast.show()
+    toast(res.msg,'error')
     return Promise.reject(new Error(res.msg))
   }else{
     return res.data
@@ -42,12 +37,7 @@ Service.interceptors.response.use(response => {
 }, error => {
   console.log(error)
   const msg = error.Message !== undefined ? error.Message : ''
-  const toast = Toast.$create({
-    time: 1000,
-    type:'error',
-    txt:'网络错误'+ msg
-  })
-  toast.show()
+  toast('网络错误'+msg,'error')
   return Promise.reject(error)
 })
 

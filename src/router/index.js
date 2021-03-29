@@ -58,8 +58,7 @@ const router=new Router({
           },
         },
         {
-          path: '/home/userInfo/:userId',
-          name:'userInfo',
+          path: '/home/userInfo/:userId/:username?',
           component: () => import('@/components/page/userInfo.vue'),
           meta:{
             isShowHeader:false,
